@@ -1,0 +1,5 @@
+module EFileOps
+singleton I18n 1.0 I18n.qml
+RuleConfigDialog 1.0 RuleConfigDialog.qml
+SettingsDialog 1.0 SettingsDialog.qml
+AboutDialog 1.0 AboutDialog.qml

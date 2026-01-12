@@ -1,0 +1,9 @@
+module rules
+
+RuleTypeSelector 1.0 RuleTypeSelector.qml
+RuleTypeCard 1.0 RuleTypeCard.qml
+ReplaceRuleConfig 1.0 ReplaceRuleConfig.qml
+RemoveRuleConfig 1.0 RemoveRuleConfig.qml
+FormatRuleConfig 1.0 FormatRuleConfig.qml
+AddRuleConfig 1.0 AddRuleConfig.qml
+NumberingRuleConfig 1.0 NumberingRuleConfig.qml

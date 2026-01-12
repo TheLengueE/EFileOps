@@ -1,0 +1,5 @@
+module LeftPanel
+
+LeftPanel 1.0 LeftPanel.qml
+LeftStatusPanel 1.0 LeftStatusPanel.qml
+LeftBottomButtons 1.0 LeftBottomButtons.qml

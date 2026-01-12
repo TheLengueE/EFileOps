@@ -1,0 +1,6 @@
+module RightPanel
+
+RightPanel 1.0 RightPanel.qml
+RightAddRuleButton 1.0 RightAddRuleButton.qml
+RightRuleList 1.0 RightRuleList.qml
+RightConfigButtons 1.0 RightConfigButtons.qml

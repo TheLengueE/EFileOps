@@ -1,0 +1,9 @@
+module CenterPanel
+
+CenterPanel 1.0 CenterPanel.qml
+FileDropArea 1.0 FileDropArea.qml
+CenterToolbar 1.0 CenterToolbar.qml
+EmptyState 1.0 EmptyState.qml
+FileListHeader 1.0 FileListHeader.qml
+FileListItem 1.0 FileListItem.qml
+FileListPagination 1.0 FileListPagination.qml
