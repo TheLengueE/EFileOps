@@ -27,9 +27,10 @@ class FileItem : public QObject
   public:
     enum class ExecutionStatus
     {
-        Pending, // Pending execution
-        Success, // Execution success
-        Failed   // Execution failed
+        Pending,    // Pending execution
+        Success,    // Execution success
+        Failed,     // Execution failed
+        RolledBack  // Rolled back due to other failures
     };
     Q_ENUM(ExecutionStatus)
 

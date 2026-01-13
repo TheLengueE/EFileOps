@@ -253,14 +253,42 @@
             <translation>没有需要处理的文件</translation>
         </message>
         <message>
+            <source>Source file does not exist</source>
+            <translation>Source file does not exist</translation>
+        </message>
+        <message>
+            <source>Filename contains invalid characters</source>
+            <translation>Filename contains invalid characters</translation>
+        </message>
+        <message>
+            <source>Permission denied</source>
+            <translation>Permission denied</translation>
+        </message>
+        <message>
+            <source>File is locked or permission denied</source>
+            <translation>File is locked or permission denied</translation>
+        </message>
+        <message>
+            <source>Failed</source>
+            <translation>Failed</translation>
+        </message>
+        <message>
+            <source>Rolled back</source>
+            <translation>Rolled back</translation>
+        </message>
+        <message>
+            <source>Operation failed: %1 file(s) failed, all changes have been rolled back</source>
+            <translation>Operation failed: %1 file(s) failed, all changes have been rolled back</translation>
+        </message>
+        <message>
             <location filename="../src/service/FileService.cpp" line="652"/>
-            <source>重命名失败：系统错误</source>
-            <translation>重命名失败：系统错误</translation>
+            <source>系统错误</source>
+            <translation>System error</translation>
         </message>
         <message>
             <location filename="../src/service/FileService.cpp" line="665"/>
-            <source>重命名失败：已回滚所有更改。失败于文件: %1</source>
-            <translation>重命名失败：已回滚所有更改。失败于文件: %1</translation>
+            <source>已回滚所有更改。失败于文件: %1</source>
+            <translation>All changes have been rolled back. Failed at file: %1</translation>
         </message>
         <message>
             <location filename="../src/service/FileService.cpp" line="680"/>
@@ -708,7 +736,7 @@
         </message>
         <message>
             <source>Click the add file button to start</source>
-            <translation>Click the add file button to start</translation>
+            <translation>Click the Add Files or Add Folder button above to start</translation>
         </message>
         <message>
             <source>Continue Anyway</source>
@@ -1073,6 +1101,10 @@ Do you want to continue?</translation>
             <translation>The starting number for file numbering</translation>
         </message>
         <message>
+            <source>Numbering follows list order. Sort by name or time in Settings</source>
+            <translation>Numbering follows list order. Sort by name or time in Settings</translation>
+        </message>
+        <message>
             <source>← Back</source>
             <translation>← Back</translation>
         </message>
@@ -1193,6 +1225,10 @@ Do you want to continue?</translation>
             <translation>← Back</translation>
         </message>
         <message>
+            <source>Replace Rule</source>
+            <translation>Replace Rule</translation>
+        </message>
+        <message>
             <source>🔄 Replace Rule</source>
             <translation>🔄 Replace Rule</translation>
         </message>
@@ -1209,24 +1245,93 @@ Do you want to continue?</translation>
             <translation>Add Rule</translation>
         </message>
         <message>
+            <source>Add prefix: "%1"</source>
+            <translation>Add prefix: "%1"</translation>
+        </message>
+        <message>
+            <source>Add suffix: "%1"</source>
+            <translation>Add suffix: "%1"</translation>
+        </message>
+        <message>
+            <source>All Lowercase</source>
+            <translation>All Lowercase</translation>
+        </message>
+        <message>
+            <source>All Uppercase</source>
+            <translation>All Uppercase</translation>
+        </message>
+        <message>
+            <source>Capitalize First</source>
+            <translation>Capitalize First</translation>
+        </message>
+        <message>
+            <source>Capitalize Words</source>
+            <translation>Capitalize Words</translation>
+        </message>
+        <message>
+            <source>[Case Sensitive]</source>
+            <translation>[Case Sensitive]</translation>
+        </message>
+        <message>
             <source>Click 'Add Rule' to start</source>
-            <translation>Click 'Add Rule' to start</translation>
+            <translation>Click 'Add Rule' above to start
+Rules execute from top to bottom</translation>
+        </message>
+        <message>
+            <source>Find: "%1" → Replace: "%2"</source>
+            <translation>Find: "%1" → Replace: "%2"</translation>
+        </message>
+        <message>
+            <source>Format: %1</source>
+            <translation>Format: %1</translation>
         </message>
         <message>
             <source>Import Configuration</source>
             <translation>Import Configuration</translation>
         </message>
         <message>
+            <source>No Padding</source>
+            <translation>No Padding</translation>
+        </message>
+        <message>
             <source>No rules yet</source>
             <translation>No rules yet</translation>
+        </message>
+        <message>
+            <source>Numbering (%1, Start: %2, %3)</source>
+            <translation>Numbering (%1, Start: %2, %3)</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>Prefix</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Remove</translation>
+        </message>
+        <message>
+            <source>Remove containing keyword: "%1"</source>
+            <translation>Remove containing keyword: "%1"</translation>
         </message>
         <message>
             <source>Save Configuration</source>
             <translation>Save Configuration</translation>
         </message>
         <message>
+            <source>Suffix</source>
+            <translation>Suffix</translation>
+        </message>
+        <message>
             <source>Unnamed Rule</source>
             <translation>Unnamed Rule</translation>
+        </message>
+        <message>
+            <source>Unknown Format</source>
+            <translation>Unknown Format</translation>
+        </message>
+        <message>
+            <source>%1 Digits</source>
+            <translation>%1 Digits</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1306,28 +1411,25 @@ Do you want to continue?</translation>
         </message>
         <message>
             <source>Add sequential numbers to files</source>
-            <translation>Add sequential numbers to files</translation>
+            <translation>Add numbers and serial numbers to files</translation>
         </message>
         <message>
             <source>Change case and format of file names</source>
-            <translation>Change case and format of file names</translation>
+            <translation>Standardize file format style, such as case formatting</translation>
         </message>
         <message>
             <source>Find and replace text in file names</source>
-            <translation>Find and replace text in file names</translation>
+            <translation>Replace a keyword in file names with another keyword</translation>
         </message>
         <message>
             <source>Format</source>
-            <translation>Format</translation>
+            <translation>Formatting</translation>
         </message>
         <message>
             <source>Numbering</source>
-            <translation>Numbering</translation>
+            <translation>Serialization</translation>
         </message>
-        <message>
-            <source>Please select the type of rule to configure</source>
-            <translation>Please select the type of rule to configure</translation>
-        </message>
+
         <message>
             <source>Remove</source>
             <translation>Remove</translation>
@@ -1350,6 +1452,34 @@ Do you want to continue?</translation>
         </message>
     </context>
     <context>
+        <name>Main</name>
+        <!-- === Main Window === -->
+        <message>
+            <source>EFileOps</source>
+            <translation>EFileOps - Efficient File Operations Tool</translation>
+        </message>
+        <message>
+            <source>Execution Failed</source>
+            <translation>Execution Failed</translation>
+        </message>
+        <message>
+            <source>%1 file(s) could not be renamed.</source>
+            <translation>%1 file(s) could not be renamed.</translation>
+        </message>
+        <message>
+            <source>All changes have been rolled back — no files were modified.</source>
+            <translation>All changes have been rolled back — no files were modified.</translation>
+        </message>
+        <message>
+            <source>Please resolve the files marked in red and try again.</source>
+            <translation>Please resolve the files marked in red and try again.</translation>
+        </message>
+        <message>
+            <source>OK</source>
+            <translation>OK</translation>
+        </message>
+    </context>
+    <context>
         <name>SettingsDialog</name>
         <!-- === QML Translations === -->
         <message>
@@ -1361,16 +1491,12 @@ Do you want to continue?</translation>
             <translation>Close</translation>
         </message>
         <message>
-            <source>Control whether file extensions are preserved during renaming</source>
-            <translation>Control whether file extensions are preserved during renaming</translation>
+            <source>Disabled - Will modify file extensions (recommended)</source>
+            <translation>Disabled - Will modify file extensions (recommended)</translation>
         </message>
         <message>
-            <source>Disabled - File extensions will be preserved (recommended)</source>
-            <translation>Disabled - File extensions will be preserved (recommended)</translation>
-        </message>
-        <message>
-            <source>Enabled - File extensions will be removed during renaming</source>
-            <translation>Enabled - File extensions will be removed during renaming</translation>
+            <source>Enabled - Will ignore file extensions</source>
+            <translation>Enabled - Will ignore file extensions</translation>
         </message>
         <message>
             <source>File Extension Handling</source>
@@ -1423,6 +1549,10 @@ Do you want to continue?</translation>
         <message>
             <source>Failed</source>
             <translation>Failed</translation>
+        </message>
+        <message>
+            <source>Rolled back</source>
+            <translation>Rolled back</translation>
         </message>
         <message>
             <source>Unknown</source>

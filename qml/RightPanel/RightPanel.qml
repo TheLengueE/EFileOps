@@ -249,18 +249,36 @@ Rectangle {
     function generateDescription(config) {
         switch(config.ruleType) {
             case "replace":
-                var desc = "Find: \"" + config.findText + "\" → Replace: \"" + config.replaceText + "\""
-                if (config.caseSensitive) desc += " [Case Sensitive]"
+                var desc = I18n.tr("RightPanel", "Find: \"%1\" → Replace: \"%2\"")
+                    .replace("%1", config.findText)
+                    .replace("%2", config.replaceText || "(empty)")
+                if (config.caseSensitive) desc += " " + I18n.tr("RightPanel", "[Case Sensitive]")
                 return desc
             case "remove":
-                return "Remove containing keyword: \"" + config.keyword + "\"" + (config.caseSensitive ? " [Case Sensitive]" : "")
+                var removeDesc = I18n.tr("RightPanel", "Remove containing keyword: \"%1\"").replace("%1", config.keyword)
+                if (config.caseSensitive) removeDesc += " " + I18n.tr("RightPanel", "[Case Sensitive]")
+                return removeDesc
             case "addPrefix":
-                return "Add prefix: \"" + config.text + "\""
+                return I18n.tr("RightPanel", "Add prefix: \"%1\"").replace("%1", config.text)
             case "addSuffix":
-                return "Add suffix: \"" + config.text + "\""
+                return I18n.tr("RightPanel", "Add suffix: \"%1\"").replace("%1", config.text)
             case "format":
-                var formatNames = ["All Uppercase", "All Lowercase", "Capitalize First", "Capitalize Words"];
-                return "Format: " + (formatNames[config.caseType] || "Unknown Format")
+                var formatNames = [
+                    I18n.tr("RightPanel", "All Uppercase"),
+                    I18n.tr("RightPanel", "All Lowercase"),
+                    I18n.tr("RightPanel", "Capitalize First"),
+                    I18n.tr("RightPanel", "Capitalize Words")
+                ]
+                return I18n.tr("RightPanel", "Format: %1").replace("%1", formatNames[config.caseType] || I18n.tr("RightPanel", "Unknown Format"))
+            case "numbering":
+                var posText = config.position === 0 ? I18n.tr("RightPanel", "Prefix") : I18n.tr("RightPanel", "Suffix")
+                var paddingText = config.paddingLength > 0 ? 
+                    I18n.tr("RightPanel", "%1 Digits").replace("%1", config.paddingLength) :
+                    I18n.tr("RightPanel", "No Padding")
+                return I18n.tr("RightPanel", "Numbering (%1, Start: %2, %3)")
+                    .replace("%1", posText)
+                    .replace("%2", config.startNumber)
+                    .replace("%3", paddingText)
             default:
                 return config.description || ""
         }

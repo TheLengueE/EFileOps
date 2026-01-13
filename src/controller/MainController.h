@@ -98,6 +98,7 @@ class MainController : public QObject
     void operationCompleted(const BaseResponse &response);
     void progressUpdated(int current, int total);
     void executionStatsChanged(); // Execution statistics changed signal
+    void executionFailed(int failedCount); // Execution failed with rollback signal
 
   private slots:
     void onFileCountChanged();

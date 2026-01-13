@@ -253,14 +253,42 @@
             <translation>没有需要处理的文件</translation>
         </message>
         <message>
+            <source>Source file does not exist</source>
+            <translation>源文件不存在</translation>
+        </message>
+        <message>
+            <source>Filename contains invalid characters</source>
+            <translation>文件名包含非法字符</translation>
+        </message>
+        <message>
+            <source>Permission denied</source>
+            <translation>权限不足</translation>
+        </message>
+        <message>
+            <source>File is locked or permission denied</source>
+            <translation>文件被占用或权限不足</translation>
+        </message>
+        <message>
+            <source>Failed</source>
+            <translation>失败</translation>
+        </message>
+        <message>
+            <source>Rolled back</source>
+            <translation>已回滚</translation>
+        </message>
+        <message>
+            <source>Operation failed: %1 file(s) failed, all changes have been rolled back</source>
+            <translation>操作失败：%1 个文件失败，所有更改已回滚</translation>
+        </message>
+        <message>
             <location filename="../src/service/FileService.cpp" line="652"/>
-            <source>重命名失败：系统错误</source>
-            <translation>重命名失败：系统错误</translation>
+            <source>系统错误</source>
+            <translation>系统错误</translation>
         </message>
         <message>
             <location filename="../src/service/FileService.cpp" line="665"/>
-            <source>重命名失败：已回滚所有更改。失败于文件: %1</source>
-            <translation>重命名失败：已回滚所有更改。失败于文件: %1</translation>
+            <source>已回滚所有更改。失败于文件: %1</source>
+            <translation>已回滚所有更改。失败于文件: %1</translation>
         </message>
         <message>
             <location filename="../src/service/FileService.cpp" line="680"/>
@@ -708,7 +736,7 @@
         </message>
         <message>
             <source>Click the add file button to start</source>
-            <translation>点击添加文件按钮开始</translation>
+            <translation>点击上方的添加文件或添加文件夹按钮开始</translation>
         </message>
         <message>
             <source>Continue Anyway</source>
@@ -1068,6 +1096,10 @@
             <translation>文件编号的起始数字</translation>
         </message>
         <message>
+            <source>Numbering follows list order. Sort by name or time in Settings</source>
+            <translation>编号顺序按列表排列，可在设置中选择按名称或时间排序</translation>
+        </message>
+        <message>
             <source>← Back</source>
             <translation>← 返回</translation>
         </message>
@@ -1188,6 +1220,10 @@
             <translation>← 返回</translation>
         </message>
         <message>
+            <source>Replace Rule</source>
+            <translation>替换规则</translation>
+        </message>
+        <message>
             <source>🔄 Replace Rule</source>
             <translation>🔄 替换规则</translation>
         </message>
@@ -1204,24 +1240,93 @@
             <translation>添加规则</translation>
         </message>
         <message>
+            <source>Add prefix: "%1"</source>
+            <translation>添加前缀："%1"</translation>
+        </message>
+        <message>
+            <source>Add suffix: "%1"</source>
+            <translation>添加后缀："%1"</translation>
+        </message>
+        <message>
+            <source>All Lowercase</source>
+            <translation>全小写</translation>
+        </message>
+        <message>
+            <source>All Uppercase</source>
+            <translation>全大写</translation>
+        </message>
+        <message>
+            <source>Capitalize First</source>
+            <translation>首字母大写</translation>
+        </message>
+        <message>
+            <source>Capitalize Words</source>
+            <translation>每个单词首字母大写</translation>
+        </message>
+        <message>
+            <source>[Case Sensitive]</source>
+            <translation>[区分大小写]</translation>
+        </message>
+        <message>
             <source>Click 'Add Rule' to start</source>
-            <translation>点击&quot;添加规则&quot;开始</translation>
+            <translation>点击上方&quot;添加规则&quot;开始
+规则从上往下执行</translation>
+        </message>
+        <message>
+            <source>Find: "%1" → Replace: "%2"</source>
+            <translation>查找："%1" → 替换："%2"</translation>
+        </message>
+        <message>
+            <source>Format: %1</source>
+            <translation>格式：%1</translation>
         </message>
         <message>
             <source>Import Configuration</source>
             <translation>导入配置</translation>
         </message>
         <message>
+            <source>No Padding</source>
+            <translation>无填充</translation>
+        </message>
+        <message>
             <source>No rules yet</source>
             <translation>还没有规则</translation>
+        </message>
+        <message>
+            <source>Numbering (%1, Start: %2, %3)</source>
+            <translation>编号（%1，起始：%2，%3）</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>前缀</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>移除</translation>
+        </message>
+        <message>
+            <source>Remove containing keyword: "%1"</source>
+            <translation>移除包含关键字："%1"</translation>
         </message>
         <message>
             <source>Save Configuration</source>
             <translation>保存配置</translation>
         </message>
         <message>
+            <source>Suffix</source>
+            <translation>后缀</translation>
+        </message>
+        <message>
             <source>Unnamed Rule</source>
             <translation>未命名规则</translation>
+        </message>
+        <message>
+            <source>Unknown Format</source>
+            <translation>未知格式</translation>
+        </message>
+        <message>
+            <source>%1 Digits</source>
+            <translation>%1 位数字</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1301,28 +1406,25 @@
         </message>
         <message>
             <source>Add sequential numbers to files</source>
-            <translation>为文件添加序号</translation>
+            <translation>为文件添加编号，序列号</translation>
         </message>
         <message>
             <source>Change case and format of file names</source>
-            <translation>更改文件名的大小写和格式</translation>
+            <translation>统一文件的格式样式，比如大小写格式</translation>
         </message>
         <message>
             <source>Find and replace text in file names</source>
-            <translation>在文件名中查找和替换文本</translation>
+            <translation>将文件名中的某个关键字换为另一个关键字</translation>
         </message>
         <message>
             <source>Format</source>
-            <translation>格式</translation>
+            <translation>格式化</translation>
         </message>
         <message>
             <source>Numbering</source>
-            <translation>编号</translation>
+            <translation>序列化</translation>
         </message>
-        <message>
-            <source>Please select the type of rule to configure</source>
-            <translation>请选择要配置的规则类型</translation>
-        </message>
+
         <message>
             <source>Remove</source>
             <translation>移除</translation>
@@ -1345,6 +1447,34 @@
         </message>
     </context>
     <context>
+        <name>Main</name>
+        <!-- === Main Window === -->
+        <message>
+            <source>EFileOps</source>
+            <translation>EFileOps - 高效文件操作工具</translation>
+        </message>
+        <message>
+            <source>Execution Failed</source>
+            <translation>操作未完成</translation>
+        </message>
+        <message>
+            <source>%1 file(s) could not be renamed.</source>
+            <translation>有 %1 个文件无法修改。</translation>
+        </message>
+        <message>
+            <source>All changes have been rolled back — no files were modified.</source>
+            <translation>所有文件名已恢复到执行前状态（未做任何修改）。</translation>
+        </message>
+        <message>
+            <source>Please resolve the files marked in red and try again.</source>
+            <translation>请先处理列表中标红的文件，然后重新执行。</translation>
+        </message>
+        <message>
+            <source>OK</source>
+            <translation>确定</translation>
+        </message>
+    </context>
+    <context>
         <name>SettingsDialog</name>
         <!-- === QML Translations === -->
         <message>
@@ -1356,16 +1486,12 @@
             <translation>关闭</translation>
         </message>
         <message>
-            <source>Control whether file extensions are preserved during renaming</source>
-            <translation>控制重命名时是否保留文件扩展名</translation>
+            <source>Disabled - Will modify file extensions (recommended)</source>
+            <translation>已禁用 - 将修改文件扩展名（推荐）</translation>
         </message>
         <message>
-            <source>Disabled - File extensions will be preserved (recommended)</source>
-            <translation>已禁用 - 将保留文件扩展名（推荐）</translation>
-        </message>
-        <message>
-            <source>Enabled - File extensions will be removed during renaming</source>
-            <translation>已启用 - 重命名时将移除文件扩展名</translation>
+            <source>Enabled - Will ignore file extensions</source>
+            <translation>已启用 - 将忽略文件扩展名</translation>
         </message>
         <message>
             <source>File Extension Handling</source>
@@ -1418,6 +1544,10 @@
         <message>
             <source>Failed</source>
             <translation>失败</translation>
+        </message>
+        <message>
+            <source>Rolled back</source>
+            <translation>已回滚</translation>
         </message>
         <message>
             <source>Unknown</source>

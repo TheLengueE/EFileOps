@@ -13,7 +13,7 @@ Rectangle {
     property string originalName: ""
     property string newName: ""
     property bool hasError: false
-    property int executionStatus: 0  // 0=Pending, 1=Success, 2=Failed
+    property int executionStatus: 0  // 0=Pending, 1=Success, 2=Failed, 3=RolledBack
     property string executionStatusText: ""
     property real listWidth: 0
     
@@ -96,6 +96,7 @@ Rectangle {
             color: {
                 if (root.executionStatus === 2) return EUITheme.colorDanger;  // Failed
                 if (root.executionStatus === 1) return EUITheme.colorSuccess;  // Success
+                if (root.executionStatus === 3) return EUITheme.colorWarning;  // RolledBack
                 return EUITheme.colorTextSubtle;  // Pending
             }
             verticalAlignment: Text.AlignVCenter

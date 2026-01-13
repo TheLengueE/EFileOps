@@ -117,6 +117,13 @@ set(MAIN_SOURCES
     Main.cpp
 )
 
+# Windows resource file for icon and version info
+if(WIN32)
+    set(WINDOWS_RESOURCES
+        EFileOps.rc
+    )
+endif()
+
 # Combine all headers
 set(ALL_HEADERS
     ${CORE_HEADERS}
@@ -140,6 +147,7 @@ set(ALL_SOURCES
     ${CONTROLLER_SOURCES}
     ${UTIL_SOURCES}
     ${TRANSLATION_SOURCES}
+    ${WINDOWS_RESOURCES}
 )
 
 # ===========================================================
@@ -156,11 +164,24 @@ qt_add_translation(QM_FILES ${TS_FILES})
 # ===========================================================
 # Main executable
 # ===========================================================
-qt_add_executable(${PROJECT_NAME}
-    ${ALL_HEADERS}
-    ${ALL_SOURCES}
-    ${QM_FILES}
-)
+if(WIN32)
+    # Windows executable with icon
+    qt_add_executable(${PROJECT_NAME} WIN32
+        ${ALL_HEADERS}
+        ${ALL_SOURCES}
+        ${QM_FILES}
+    )
+    # Set Windows application icon
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+    )
+else()
+    qt_add_executable(${PROJECT_NAME}
+        ${ALL_HEADERS}
+        ${ALL_SOURCES}
+        ${QM_FILES}
+    )
+endif()
 
 # Print source file information (for debugging)
 message(STATUS "📄 Total header files: ${CMAKE_CURRENT_LIST_DIR}")
@@ -211,10 +232,8 @@ qt_add_qml_module(${PROJECT_NAME}
         icons/file-plus.svg
         icons/folder-plus.svg
         icons/trash.svg
-        icons/upload.svg
         icons/save.svg
         icons/settings.svg
-        icons/info-circle.svg
         icons/info.svg
         icons/undo.svg
         icons/folder.svg

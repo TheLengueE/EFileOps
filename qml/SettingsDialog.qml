@@ -277,14 +277,6 @@ Popup {
                         color: EUITheme.colorText
                     }
                     
-                    Text {
-                        text: I18n.tr("SettingsDialog", "Control whether file extensions are preserved during renaming")
-                        font.pixelSize: EUITheme.fontCaption
-                        color: EUITheme.colorTextSubtle
-                        wrapMode: Text.WordWrap
-                        width: parent.width
-                    }
-                    
                     Row {
                         width: parent.width
                         spacing: EUITheme.spacingM
@@ -329,8 +321,8 @@ Popup {
                             
                             Text {
                                 text: ignoreExtensionSwitch.checked 
-                                    ? I18n.tr("SettingsDialog", "Enabled - File extensions will be removed during renaming")
-                                    : I18n.tr("SettingsDialog", "Disabled - File extensions will be preserved (recommended)")
+                                    ? I18n.tr("SettingsDialog", "Enabled - Will ignore file extensions")
+                                    : I18n.tr("SettingsDialog", "Disabled - Will modify file extensions (recommended)")
                                 font.pixelSize: EUITheme.fontCaption
                                 color: EUITheme.colorTextSubtle
                                 wrapMode: Text.WordWrap

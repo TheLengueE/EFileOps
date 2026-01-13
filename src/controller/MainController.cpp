@@ -374,6 +374,12 @@ void MainController::onRenameExecuted(int successCount, int failureCount)
 
     emit executionStatsChanged();
 
+    // If there were failures and rollback occurred (successCount = 0), emit executionFailed signal
+    if (failureCount > 0 && successCount == 0)
+    {
+        emit executionFailed(failureCount);
+    }
+
     QString msg = tr("Rename complete: Successful %1, failed %2").arg(successCount).arg(failureCount);
     setStatusMessage(msg);
 }

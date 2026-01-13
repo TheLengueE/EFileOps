@@ -122,6 +122,8 @@ QVariant FileListModel::data(const QModelIndex &index, int role) const
             return tr("Success");
         case FileItem::ExecutionStatus::Failed:
             return item->errorMessage().isEmpty() ? tr("Failed") : item->errorMessage();
+        case FileItem::ExecutionStatus::RolledBack:
+            return item->errorMessage().isEmpty() ? tr("Rolled back") : item->errorMessage();
         }
         return tr("Unknown");
     }

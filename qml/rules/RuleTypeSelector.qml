@@ -69,13 +69,6 @@ Popup {
             width: parent.width
         }
         
-        Text {
-            text: I18n.tr("RuleTypeSelector", "Please select the type of rule to configure")
-            font.pixelSize: EUITheme.fontBody
-            color: EUITheme.colorTextSubtle
-            width: parent.width
-        }
-        
         // Rule type list (vertical layout)
         Column {
             width: parent.width

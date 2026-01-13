@@ -393,6 +393,40 @@ Popup {
                 font.pixelSize: EUITheme.fontCaption
                 color: EUITheme.colorTextSubtle
             }
+            
+            // Tip about numbering order
+            Rectangle {
+                width: parent.width
+                height: orderTipText.height + EUITheme.spacingM * 1.5
+                color: "#FFF8E1"
+                border.width: 1
+                border.color: "#FFD54F"
+                radius: EUITheme.radiusSmall
+                
+                Row {
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.margins: EUITheme.spacingM
+                    spacing: EUITheme.spacingS
+                    
+                    Image {
+                        source: "../../icons/info.svg"
+                        width: 16
+                        height: 16
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    
+                    Text {
+                        id: orderTipText
+                        text: I18n.tr("NumberingRuleConfig", "Numbering follows list order. Sort by name or time in Settings")
+                        font.pixelSize: EUITheme.fontCaption
+                        color: "#F57C00"
+                        wrapMode: Text.WordWrap
+                        width: parent.width - 16 - parent.spacing - EUITheme.spacingS
+                    }
+                }
+            }
         }
         
         // Separator

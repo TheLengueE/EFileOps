@@ -18,6 +18,15 @@ ApplicationWindow {
 
     color: EUITheme.colorBg
 
+    // Monitor execution failure and show error dialog
+    Connections {
+        target: mainController
+        function onExecutionFailed(failedCount) {
+            executionErrorDialog.failedCount = failedCount;
+            executionErrorDialog.open();
+        }
+    }
+
     // Monitor selection state changes, notify MainController
     Connections {
         target: fileListModel
@@ -51,5 +60,29 @@ ApplicationWindow {
             width: 320  // Fixed width (about 23%)
             height: parent.height
         }
+    }
+
+    // Execution Error Dialog (Rollback)
+    EDialog {
+        id: executionErrorDialog
+
+        property int failedCount: 0
+
+        implicitWidth: 480
+
+        title: {
+            var v = I18n.version; // Establish binding dependency
+            return "❌ " + I18n.tr("Main", "Execution Failed");
+        }
+
+        message: {
+            var v = I18n.version; // Establish binding dependency
+            return I18n.tr("Main", "%1 file(s) could not be renamed.").arg(failedCount) + "\n" +
+                   I18n.tr("Main", "All changes have been rolled back — no files were modified.") + "\n\n" +
+                   I18n.tr("Main", "Please resolve the files marked in red and try again.");
+        }
+
+        confirmText: I18n.tr("Main", "OK")
+        showCancel: false
     }
 }

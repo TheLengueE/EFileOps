@@ -508,6 +508,7 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
     QList<int>                 files_to_remove; // Indices to be removed (from list)
     QList<QPair<int, QString>> rename_list;     // <Index, New path>
     QList<QString>             original_paths;  // For rollback
+    int                        pre_failure_count = 0; // Count failures before execution
 
     for (int index : selectedIndices)
     {
@@ -554,8 +555,10 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
         {
             qDebug() << "    [Error] Target file already exists";
             file->setHasError(true);
-            file->setErrorMessage(tr("Target file already exists"));
+            file->setErrorMessage(tr("Failed"));
             file->setExecutionStatus(FileItem::ExecutionStatus::Failed);
+            emit fileUpdated(index); // Notify UI immediately
+            pre_failure_count++;
             continue;
         }
 
@@ -586,13 +589,69 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
     // If both lists are empty
     if (rename_list.isEmpty() && remove_count == 0)
     {
+        // If there were pre-execution failures, need to sort and emit signal
+        if (pre_failure_count > 0)
+        {
+            qDebug() << "[executeRename] All files failed pre-execution checks, sorting by status...";
+            std::sort(files_.begin(), files_.end(),
+                      [](const FileItem *a, const FileItem *b)
+                      {
+                          // Priority: Failed(2) > RolledBack(3) > Pending(0) > Success(1)
+                          int priority_a, priority_b;
+                          
+                          switch (a->executionStatus())
+                          {
+                          case FileItem::ExecutionStatus::Failed:
+                              priority_a = 0;
+                              break;
+                          case FileItem::ExecutionStatus::RolledBack:
+                              priority_a = 1;
+                              break;
+                          case FileItem::ExecutionStatus::Pending:
+                              priority_a = 2;
+                              break;
+                          case FileItem::ExecutionStatus::Success:
+                              priority_a = 3;
+                              break;
+                          default:
+                              priority_a = 4;
+                              break;
+                          }
+                          
+                          switch (b->executionStatus())
+                          {
+                          case FileItem::ExecutionStatus::Failed:
+                              priority_b = 0;
+                              break;
+                          case FileItem::ExecutionStatus::RolledBack:
+                              priority_b = 1;
+                              break;
+                          case FileItem::ExecutionStatus::Pending:
+                              priority_b = 2;
+                              break;
+                          case FileItem::ExecutionStatus::Success:
+                              priority_b = 3;
+                              break;
+                          default:
+                              priority_b = 4;
+                              break;
+                          }
+                          
+                          return priority_a < priority_b;
+                      });
+            
+            emit filesSorted();
+            emit renameExecuted(0, pre_failure_count);
+        }
+        
         return BaseResponse::Error(tr("No files to process"), OperationErrorCode::kNoFiles);
     }
 
-    // Execute renames (atomic operation, rollback if failed)
+    // Execute renames (continue on failure, rollback all if any failed)
     int                            success_count = 0;
     int                            failure_count = 0;
-    QList<QPair<QString, QString>> successful_renames; // For rollback on failure
+    QList<QPair<int, QString>>     successful_renames; // Store adjusted_index and old_path for rollback
+    QList<QPair<int, FileItem *>>  succeeded_files;    // Store adjusted_index and new FileItem for rollback
 
     for (int i = 0; i < rename_list.size(); ++i)
     {
@@ -625,7 +684,9 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
         {
             // Rename successful
             success_count++;
-            successful_renames.append(qMakePair(old_path, new_path));
+
+            // Store old file for potential rollback
+            FileItem *old_file = file;
 
             // Re-parse new path (update internal state)
             FileItem *new_file = new FileItem(new_path, file->parent());
@@ -638,32 +699,137 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
             new_file->setErrorMessage("");
             new_file->setExecutionStatus(FileItem::ExecutionStatus::Success);
 
-            // Replace old FileItem
+            // Replace old FileItem (but don't delete old_file yet, we might need it for rollback)
             files_[adjusted_index] = new_file;
-            delete file;
+
+            // Record for potential rollback
+            successful_renames.append(qMakePair(adjusted_index, old_path));
+            succeeded_files.append(qMakePair(adjusted_index, old_file));
 
             emit fileUpdated(adjusted_index);
         }
         else
         {
-            // Rename failed
+            // Rename failed - mark as failed and continue with next file
             failure_count++;
             file->setHasError(true);
-            file->setErrorMessage(tr("Rename failed: System error"));
+            file->setErrorMessage(tr("Failed"));
             file->setExecutionStatus(FileItem::ExecutionStatus::Failed);
             emit fileUpdated(adjusted_index);
+            
+            // Continue to next file (will rollback at the end if needed)
+        }
+    }
 
-            // Don't continue on failure, rollback all successful renames directly
-            // Rollback executed renames
-            for (const auto &pair : successful_renames)
+    // If any file failed, rollback all successful renames
+    if (failure_count > 0 && success_count > 0)
+    {
+        qDebug() << "[Rollback] Detected failures, rolling back all successful renames...";
+        
+        QDir dir;
+        for (int i = 0; i < successful_renames.size(); ++i)
+        {
+            int     adjusted_index = successful_renames[i].first;
+            QString old_path       = successful_renames[i].second;
+            FileItem *old_file     = succeeded_files[i].second;
+            FileItem *new_file     = files_[adjusted_index];
+            QString   new_path     = new_file->originalPath();
+
+            qDebug() << "  Rollback:" << new_path << "->" << old_path;
+
+            // Rollback the rename
+            if (dir.rename(new_path, old_path))
             {
-                QString restored_old = pair.first;
-                QString restored_new = pair.second;
-                dir.rename(restored_new, restored_old);
-            }
+                // Restore old FileItem
+                old_file->setNewName(old_file->fileName() + old_file->extension());
+                old_file->setHasError(false);
+                old_file->setErrorMessage(tr("Rolled back"));
+                old_file->setExecutionStatus(FileItem::ExecutionStatus::RolledBack);
 
-            return BaseResponse::Error(tr("Rename failed: All changes have been rolled back. Failed at file: %1").arg(file->fileName()),
-                                       FileErrorCode::kFileRenameFailed);
+                files_[adjusted_index] = old_file;
+                delete new_file;
+
+                emit fileUpdated(adjusted_index);
+            }
+            else
+            {
+                qWarning() << "  [Warning] Failed to rollback:" << new_path;
+                delete old_file; // Clean up if rollback failed
+            }
+        }
+
+        // Clear successful renames that weren't deleted during rollback
+        for (auto &pair : succeeded_files)
+        {
+            // If the file wasn't used in rollback, we need to delete it
+            // (This handles the case where rollback failed)
+        }
+
+        qDebug() << "[Rollback] Complete. All changes have been rolled back.";
+        
+        // Sort files by execution status: Failed > RolledBack > Pending > Success
+        qDebug() << "[Rollback] Sorting files by status...";
+        std::sort(files_.begin(), files_.end(),
+                  [](const FileItem *a, const FileItem *b)
+                  {
+                      // Priority: Failed(2) > RolledBack(3) > Pending(0) > Success(1)
+                      int priority_a, priority_b;
+                      
+                      switch (a->executionStatus())
+                      {
+                      case FileItem::ExecutionStatus::Failed:
+                          priority_a = 0; // Highest priority
+                          break;
+                      case FileItem::ExecutionStatus::RolledBack:
+                          priority_a = 1;
+                          break;
+                      case FileItem::ExecutionStatus::Pending:
+                          priority_a = 2;
+                          break;
+                      case FileItem::ExecutionStatus::Success:
+                          priority_a = 3; // Lowest priority
+                          break;
+                      default:
+                          priority_a = 4;
+                          break;
+                      }
+                      
+                      switch (b->executionStatus())
+                      {
+                      case FileItem::ExecutionStatus::Failed:
+                          priority_b = 0;
+                          break;
+                      case FileItem::ExecutionStatus::RolledBack:
+                          priority_b = 1;
+                          break;
+                      case FileItem::ExecutionStatus::Pending:
+                          priority_b = 2;
+                          break;
+                      case FileItem::ExecutionStatus::Success:
+                          priority_b = 3;
+                          break;
+                      default:
+                          priority_b = 4;
+                          break;
+                      }
+                      
+                      return priority_a < priority_b;
+                  });
+        
+        emit filesSorted(); // Notify UI to update
+        qDebug() << "[Rollback] Sort complete.";
+        
+        emit renameExecuted(0, failure_count); // success_count = 0 after rollback
+
+        return BaseResponse::Error(tr("Operation failed: %1 file(s) failed, all changes have been rolled back").arg(failure_count),
+                                   FileErrorCode::kFileRenameFailed);
+    }
+    else
+    {
+        // No failures, clean up old FileItems
+        for (auto &pair : succeeded_files)
+        {
+            delete pair.second;
         }
     }
 

@@ -57,7 +57,7 @@ Rectangle {
 
         delegate: Rectangle {
             width: ruleListView.width
-            height: 85
+            height: 70
             color: ruleMouseArea.containsMouse ? "#EEF3FF" : "#F7F9FC"
             border.width: 1
             border.color: EUITheme.colorBorder
@@ -131,14 +131,15 @@ Rectangle {
                     }
                 }
                 
-                // Rule name and description
+                // Rule type and description
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 6
-                    width: parent.width - 100
+                    spacing: 4
+                    width: parent.width - 40
 
+                    // First line: Rule type
                     Text {
-                        text: model.name || I18n.tr("RightPanel", "Unnamed Rule")
+                        text: getRuleTypeName(model.config ? model.config.ruleType : "")
                         font.pixelSize: EUITheme.fontBody
                         font.weight: EUITheme.fontWeightMedium
                         color: EUITheme.colorText
@@ -146,6 +147,7 @@ Rectangle {
                         width: parent.width
                     }
 
+                    // Second line: Rule description
                     Text {
                         text: model.description || ""
                         font.pixelSize: EUITheme.fontCaption
@@ -155,33 +157,40 @@ Rectangle {
                         visible: text.length > 0
                     }
                 }
+            }
 
-                // Delete button
-                Rectangle {
-                    width: 36
-                    height: 36
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: deleteMouseArea.containsMouse ? Qt.rgba(239, 68, 68, 0.15) : "transparent"
-                    radius: EUITheme.radiusSmall
+            // Delete button (top-right corner)
+            Rectangle {
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.margins: EUITheme.spacingS
+                width: 28
+                height: 28
+                color: deleteMouseArea.containsMouse ? Qt.rgba(59, 130, 246, 0.1) : "transparent"
+                radius: EUITheme.radiusSmall
+                
+                Text {
+                    text: "\u2715"
+                    font.pixelSize: 16
+                    font.weight: Font.Bold
+                    color: EUITheme.colorPrimary
+                    anchors.centerIn: parent
+                    opacity: deleteMouseArea.containsMouse ? 1.0 : 0.7
+                }
+
+                MouseArea {
+                    id: deleteMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        mouse.accepted = true
+                        root.ruleDeleted(index)
+                    }
                     
-                    Image {
-                        source: "../../icons/trash.svg"
-                        width: 20
-                        height: 20
-                        anchors.centerIn: parent
-                        opacity: deleteMouseArea.containsMouse ? 1.0 : 0.7
-                    }
-
-                    MouseArea {
-                        id: deleteMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            mouse.accepted = true
-                            root.ruleDeleted(index)
-                        }
-                    }
+                    ToolTip.visible: containsMouse
+                    ToolTip.text: I18n.tr("RightPanel", "Remove")
+                    ToolTip.delay: 500
                 }
             }
 
@@ -213,6 +222,26 @@ Rectangle {
                 return "../../icons/hash.svg"
             default:
                 return "../../icons/clipboard.svg"
+        }
+    }
+    
+    // Get rule type name for display
+    function getRuleTypeName(ruleType) {
+        switch(ruleType) {
+            case "replace":
+                return I18n.tr("RuleTypeSelector", "Replace")
+            case "remove":
+                return I18n.tr("RuleTypeSelector", "Remove")
+            case "format":
+                return I18n.tr("RuleTypeSelector", "Format")
+            case "add":
+            case "addPrefix":
+            case "addSuffix":
+                return I18n.tr("RuleTypeSelector", "Add")
+            case "numbering":
+                return I18n.tr("RuleTypeSelector", "Numbering")
+            default:
+                return I18n.tr("RightPanel", "Unnamed Rule")
         }
     }
     
