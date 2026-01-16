@@ -2,6 +2,9 @@
 
 #include <QObject>
 #include <QList>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include "../model/FileItem.h"
 #include "../core/BaseResponse.h"
 

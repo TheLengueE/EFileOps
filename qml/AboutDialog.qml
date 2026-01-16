@@ -38,19 +38,15 @@ Popup {
             width: parent.width
             spacing: EUITheme.spacingM
             
-            // Logo placeholder
-            Rectangle {
+            // Program Icon
+            Image {
                 width: 80
                 height: 80
                 anchors.horizontalCenter: parent.horizontalCenter
-                color: EUITheme.colorPrimary
-                radius: EUITheme.radiusMedium
-                
-                Text {
-                    anchors.centerIn: parent
-                    text: "📁"
-                    font.pixelSize: 48
-                }
+                source: "../icons/EFileOps.png"
+                smooth: true
+                mipmap: true
+                fillMode: Image.PreserveAspectFit
             }
             
             // Software name
@@ -68,6 +64,96 @@ Popup {
                 font.pixelSize: EUITheme.fontBody
                 color: EUITheme.colorTextSubtle
                 anchors.horizontalCenter: parent.horizontalCenter
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+            }
+            
+            // Description
+            Text {
+                width: parent.width
+                text: I18n.tr("AboutDialog", "A Windows file batch renaming tool that focuses on safety and simplicity.")
+                font.pixelSize: EUITheme.fontSmall
+                color: EUITheme.colorTextSubtle
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+        
+        // Divider
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: EUITheme.colorDivider
+        }
+        
+        // Design Principles
+        Column {
+            width: parent.width
+            spacing: EUITheme.spacingM
+            
+            // Section title
+            Text {
+                text: I18n.tr("AboutDialog", "Design Principles:")
+                font.pixelSize: EUITheme.fontBody
+                font.weight: EUITheme.fontWeightSemiBold
+                color: EUITheme.colorText
+            }
+            
+            // Principle 1
+            Row {
+                width: parent.width
+                spacing: EUITheme.spacingS
+                
+                Text {
+                    text: "•"
+                    font.pixelSize: EUITheme.fontBody
+                    color: EUITheme.colorPrimary
+                    font.weight: EUITheme.fontWeightBold
+                }
+                
+                Text {
+                    text: I18n.tr("AboutDialog", "Preview before execution")
+                    font.pixelSize: EUITheme.fontBody
+                    color: EUITheme.colorText
+                }
+            }
+            
+            // Principle 2
+            Row {
+                width: parent.width
+                spacing: EUITheme.spacingS
+                
+                Text {
+                    text: "•"
+                    font.pixelSize: EUITheme.fontBody
+                    color: EUITheme.colorPrimary
+                    font.weight: EUITheme.fontWeightBold
+                }
+                
+                Text {
+                    text: I18n.tr("AboutDialog", "Atomic operations (all or nothing)")
+                    font.pixelSize: EUITheme.fontBody
+                    color: EUITheme.colorText
+                }
+            }
+            
+            // Principle 3
+            Row {
+                width: parent.width
+                spacing: EUITheme.spacingS
+                
+                Text {
+                    text: "•"
+                    font.pixelSize: EUITheme.fontBody
+                    color: EUITheme.colorPrimary
+                    font.weight: EUITheme.fontWeightBold
+                }
+                
+                Text {
+                    text: I18n.tr("AboutDialog", "Automatic rollback on failure")
+                    font.pixelSize: EUITheme.fontBody
+                    color: EUITheme.colorText
+                }
             }
         }
         
@@ -120,68 +206,6 @@ Popup {
                     font.pixelSize: EUITheme.fontBody
                     color: EUITheme.colorText
                     font.weight: EUITheme.fontWeightMedium
-                }
-            }
-            
-            // License
-            Row {
-                width: parent.width
-                spacing: EUITheme.spacingM
-                
-                Text {
-                    text: I18n.tr("AboutDialog", "License:")
-                    font.pixelSize: EUITheme.fontBody
-                    color: EUITheme.colorTextSubtle
-                    width: 100
-                }
-                
-                Text {
-                    text: "MIT"
-                    font.pixelSize: EUITheme.fontBody
-                    color: EUITheme.colorText
-                    font.weight: EUITheme.fontWeightMedium
-                }
-            }
-            
-            // GitHub link
-            Row {
-                width: parent.width
-                spacing: EUITheme.spacingM
-                
-                Text {
-                    text: I18n.tr("AboutDialog", "GitHub:")
-                    font.pixelSize: EUITheme.fontBody
-                    color: EUITheme.colorTextSubtle
-                    width: 100
-                }
-                
-                Rectangle {
-                    width: linkText.width + EUITheme.spacingM * 2
-                    height: linkText.height + EUITheme.spacingS
-                    color: linkMouseArea.containsMouse ? EUITheme.colorMutedBg : "transparent"
-                    radius: EUITheme.radiusSmall
-                    
-                    Text {
-                        id: linkText
-                        anchors.centerIn: parent
-                        text: I18n.tr("AboutDialog", "Coming soon...")
-                        font.pixelSize: EUITheme.fontBody
-                        color: EUITheme.colorTextSubtle
-                        font.italic: true
-                    }
-                    
-                    MouseArea {
-                        id: linkMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        enabled: false  // Temporarily disabled
-                        
-                        onClicked: {
-                            // TODO: Open GitHub link
-                            Qt.openUrlExternally("https://github.com/TheLengueE/EFileOps")
-                        }
-                    }
                 }
             }
         }

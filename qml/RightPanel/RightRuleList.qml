@@ -19,6 +19,7 @@ Rectangle {
     // Empty state hint
     Column {
         anchors.centerIn: parent
+        width: Math.min(parent.width - EUITheme.spacingXL * 2, 300)
         spacing: EUITheme.spacingS
         visible: ruleListView.count === 0
 
@@ -36,6 +37,7 @@ Rectangle {
             font.pixelSize: EUITheme.fontBody
             color: EUITheme.colorTextSubtle
             anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
         }
 
         Text {
@@ -44,6 +46,9 @@ Rectangle {
             color: EUITheme.colorTextSubtle
             opacity: 0.6
             anchors.horizontalCenter: parent.horizontalCenter
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            width: parent.width
         }
     }
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <!-- 剪贴板主体（浅灰色背景）-->
+  <path d="M6,4 L6,20 Q6,21 7,21 L17,21 Q18,21 18,20 L18,4 Z" fill="#E5E7EB"/>
+  <!-- 顶部夹子（深灰色金属感）-->
+  <rect x="8" y="2" width="8" height="4" rx="1" fill="#6B7280"/>
+  <!-- 内容线条（蓝色文本）-->
+  <line x1="9" y1="10" x2="15" y2="10" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="9" y1="14" x2="15" y2="14" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="9" y1="18" x2="13" y2="18" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
+</svg>

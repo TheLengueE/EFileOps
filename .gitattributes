@@ -1,0 +1,63 @@
+# ================================
+# Basic Settings: Auto Line Ending Management
+# ================================
+* text=auto
+
+# ================================
+# Force LF for Script Files
+# ================================
+*.sh text eol=lf
+*.bash text eol=lf
+*.py text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+
+# Windows batch scripts
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# ================================
+# Binary Files (No diff attempted)
+# ================================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.bmp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.exe binary
+*.dll binary
+*.lib binary
+*.a binary
+*.pdb binary
+*.zip binary
+*.7z binary
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+
+# ================================
+# Qt Auto-Generated Files (Ignore diff + stats)
+# ================================
+moc_* linguist-generated
+ui_*.h linguist-generated
+qrc_* linguist-generated
+
+# ================================
+# C++ Binary Artifacts
+# ================================
+*.o binary
+*.obj binary
+*.pdb binary
+
+# ================================
+# GitHub Language Statistics Optimization
+# ================================
+*.json linguist-detectable
+*.qrc linguist-detectable
+*.ui linguist-detectable
+
+# Ignore build directory in statistics
+build/** linguist-generated

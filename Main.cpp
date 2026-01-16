@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("EFileOps");
     app.setOrganizationDomain("efileops.org");
     app.setApplicationName("EFileOps");
-    app.setApplicationVersion("0.1.0");
+    app.setApplicationVersion("1.0.0");
 
     // Set UI style
     QQuickStyle::setStyle("Basic");
@@ -51,9 +51,24 @@ int main(int argc, char *argv[])
     // Create and register file list model
     FileListModel file_list_model(main_controller.fileService());
     engine.rootContext()->setContextProperty("fileListModel", &file_list_model);
-    
+
     // Set file list model reference to main controller (for auto-selection after adding files)
     main_controller.setFileListModel(&file_list_model);
+
+    // Auto-restore session if enabled
+    if (AppSettings::instance()->autoRestoreSession())
+    {
+        qDebug() << "[Main] Auto-restore enabled, loading previous session...";
+        main_controller.loadSession();
+    }
+
+    // Connect app aboutToQuit signal to save session
+    QObject::connect(&app, &QGuiApplication::aboutToQuit,
+                     [&main_controller]()
+                     {
+                         qDebug() << "[Main] Application closing, saving session...";
+                         main_controller.autoSaveSession();
+                     });
 
     // Add import path for EUI components (loaded at runtime from qml/EUI/)
     QString qml_path = QCoreApplication::applicationDirPath() + "/qml";

@@ -878,14 +878,92 @@ void FileService::updatePreview(const QList<QString> &newNames)
 
 BaseResponse FileService::exportToJson(const QString &filePath) const
 {
-    // TODO: Implement export
-    return BaseResponse::Error(tr("Feature not implemented yet"), ErrorCode::NOT_IMPLEMENTED);
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        return BaseResponse::Error(tr("Failed to open file for writing: %1").arg(filePath),
+                                   FileErrorCode::kFileOpenFailed);
+    }
+
+    QJsonArray filesArray;
+    for (const FileItem *item : files_)
+    {
+        QJsonObject fileObj;
+        fileObj["originalPath"]    = item->originalPath();
+        fileObj["fileName"]        = item->fileName();
+        fileObj["extension"]       = item->extension();
+        fileObj["newName"]         = item->newName();
+        fileObj["size"]            = item->size();
+        fileObj["created"]         = item->created().toString(Qt::ISODate);
+        fileObj["modified"]        = item->modified().toString(Qt::ISODate);
+        fileObj["hasError"]        = item->hasError();
+        fileObj["errorMessage"]    = item->errorMessage();
+        fileObj["executionStatus"] = static_cast<int>(item->executionStatus());
+        filesArray.append(fileObj);
+    }
+
+    QJsonObject rootObj;
+    rootObj["version"] = "1.0";
+    rootObj["files"]   = filesArray;
+
+    QJsonDocument doc(rootObj);
+    file.write(doc.toJson());
+    file.close();
+
+    return BaseResponse::Success(tr("Exported %1 files").arg(files_.size()));
 }
 
 BaseResponse FileService::importFromJson(const QString &filePath)
 {
-    // TODO: Implement import
-    return BaseResponse::Error(tr("Feature not implemented yet"), ErrorCode::NOT_IMPLEMENTED);
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        return BaseResponse::Error(tr("Failed to open file for reading: %1").arg(filePath),
+                                   FileErrorCode::kFileOpenFailed);
+    }
+
+    QByteArray      data = file.readAll();
+    file.close();
+
+    QJsonDocument   doc    = QJsonDocument::fromJson(data);
+    if (!doc.isObject())
+    {
+        return BaseResponse::Error(tr("Invalid JSON format"), FileErrorCode::kFileFormatError);
+    }
+
+    QJsonObject rootObj    = doc.object();
+    QJsonArray  filesArray = rootObj["files"].toArray();
+
+    // Clear existing files first
+    clear();
+
+    // Import files
+    for (const QJsonValue &value : filesArray)
+    {
+        QJsonObject fileObj        = value.toObject();
+        QString     originalPath   = fileObj["originalPath"].toString();
+
+        // Check if file still exists
+        if (!QFileInfo::exists(originalPath))
+        {
+            qWarning() << "File no longer exists:" << originalPath;
+            continue;
+        }
+
+        FileItem *item = new FileItem(originalPath, this);
+        item->setNewName(fileObj["newName"].toString());
+        item->setHasError(fileObj["hasError"].toBool());
+        item->setErrorMessage(fileObj["errorMessage"].toString());
+        item->setExecutionStatus(
+            static_cast<FileItem::ExecutionStatus>(fileObj["executionStatus"].toInt()));
+
+        files_.append(item);
+    }
+
+    emit fileCountChanged();
+    emit filesAdded(files_.size());
+
+    return BaseResponse::Success(tr("Imported %1 files").arg(files_.size()));
 }
 
 bool FileService::isFilePathValid(const QString &filePath) const

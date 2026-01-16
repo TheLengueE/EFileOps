@@ -1,6 +1,10 @@
 #pragma once
 
 #include <QObject>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include "../core/BaseRequest.h"
 #include "../core/BaseResponse.h"
 #include "../core/AppSettings.h"
@@ -71,7 +75,7 @@ class MainController : public QObject
     Q_INVOKABLE BaseResponse moveRule(int fromIndex, int toIndex);
     Q_INVOKABLE BaseResponse updateRule(int index, const QVariantMap &config);
     Q_INVOKABLE BaseResponse clearRules();
-    
+
     // Rule configuration save/load
     Q_INVOKABLE BaseResponse saveRulesConfig(const QString &filePath);
     Q_INVOKABLE BaseResponse loadRulesConfig(const QString &filePath);
@@ -89,6 +93,11 @@ class MainController : public QObject
     Q_INVOKABLE BaseResponse loadProject(const QString &filePath);
     Q_INVOKABLE BaseResponse exportRenameList(const QString &filePath);
 
+    // Session management (auto save/restore)
+    Q_INVOKABLE BaseResponse saveSession();
+    Q_INVOKABLE BaseResponse loadSession();
+    Q_INVOKABLE void         autoSaveSession(); // Called when app is about to quit
+
     // Set FileListModel reference (called from Main.cpp)
     void setFileListModel(FileListModel *model) { file_list_model_ = model; }
 
@@ -97,7 +106,7 @@ class MainController : public QObject
     void isBusyChanged();
     void operationCompleted(const BaseResponse &response);
     void progressUpdated(int current, int total);
-    void executionStatsChanged(); // Execution statistics changed signal
+    void executionStatsChanged();          // Execution statistics changed signal
     void executionFailed(int failedCount); // Execution failed with rollback signal
 
   private slots:
@@ -121,12 +130,12 @@ class MainController : public QObject
     bool validateRequest(const BaseRequest &request, const QStringList &requiredParams, QString *errorMsg = nullptr);
 
   private:
-    FileService    *file_service_;
-    RuleEngine     *rule_engine_;
-    FileListModel  *file_list_model_ = nullptr; // File list model reference (for auto-selection)
-    QString         status_message_;
-    bool            is_busy_;
-    QList<int>      selected_indices_; // Currently selected file indices
+    FileService   *file_service_;
+    RuleEngine    *rule_engine_;
+    FileListModel *file_list_model_ = nullptr; // File list model reference (for auto-selection)
+    QString        status_message_;
+    bool           is_busy_;
+    QList<int>     selected_indices_; // Currently selected file indices
 
     // Last execution statistics
     int last_executed_count_ = 0;

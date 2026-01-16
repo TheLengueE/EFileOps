@@ -592,34 +592,6 @@
         </message>
     </context>
     <context>
-        <message>
-            <source>Author:</source>
-            <translation>Author:</translation>
-        </message>
-        <message>
-            <source>Batch File Rename Tool</source>
-            <translation>Batch File Rename Tool</translation>
-        </message>
-        <message>
-            <source>Close</source>
-            <translation>Close</translation>
-        </message>
-        <message>
-            <source>Coming soon...</source>
-            <translation>Coming soon...</translation>
-        </message>
-        <message>
-            <source>GitHub:</source>
-            <translation>GitHub:</translation>
-        </message>
-        <message>
-            <source>License:</source>
-            <translation>License:</translation>
-        </message>
-        <message>
-            <source>Version:</source>
-            <translation>Version:</translation>
-        </message>
         <name>AboutDialog</name>
         <!-- === QML Translations === -->
         <message>
@@ -635,20 +607,28 @@
             <translation>Close</translation>
         </message>
         <message>
-            <source>Coming soon...</source>
-            <translation>Coming soon...</translation>
-        </message>
-        <message>
-            <source>GitHub:</source>
-            <translation>GitHub:</translation>
-        </message>
-        <message>
-            <source>License:</source>
-            <translation>License:</translation>
-        </message>
-        <message>
             <source>Version:</source>
             <translation>Version:</translation>
+        </message>
+        <message>
+            <source>A Windows file batch renaming tool that focuses on safety and simplicity.</source>
+            <translation>A Windows file batch renaming tool that focuses on safety and simplicity.</translation>
+        </message>
+        <message>
+            <source>Design Principles:</source>
+            <translation>Design Principles:</translation>
+        </message>
+        <message>
+            <source>Preview before execution</source>
+            <translation>Preview before execution</translation>
+        </message>
+        <message>
+            <source>Atomic operations (all or nothing)</source>
+            <translation>Atomic operations (all or nothing)</translation>
+        </message>
+        <message>
+            <source>Automatic rollback on failure</source>
+            <translation>Automatic rollback on failure</translation>
         </message>
     </context>
     <context>

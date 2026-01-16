@@ -1,0 +1,137 @@
+# ============================================
+#  C++ / CMake / Qt / vcpkg / VS / EC++ Project
+# ============================================
+
+# =========================
+# OS General
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# CMake Build Directory
+# =========================
+/build/
+/build-*/*
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/CTestTestfile.cmake
+/Testing/
+/installer/
+
+# Ninja / Make
+.ninja_deps
+.ninja_log
+Makefile
+
+# MSVC-specific
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.pdb
+*.obj
+*.idb
+*.ipdb
+*.iobj
+*.ilk
+*.tlog/
+*.log
+*.lastbuildstate
+
+# =========================
+# Qt Auto-Generated
+# =========================
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+*.moc
+*.rcc
+*.qmlc
+*.jsc
+*.qmake.stash
+*.pro.user
+*.qmlproject.user
+
+# Qt Creator
+/.qmake.cache
+/.qmake.stash
+/.qt/
+
+# Qt deploy directory
+deploy/
+
+# =========================
+# Output Files / Program Output
+# =========================
+*.exe
+*.dll
+*.lib
+*.a
+*.so
+*.dylib
+
+*.app/
+*.bundle/
+*.apk
+*.ipa
+
+# dump, core files
+*.dmp
+*.core
+
+# =========================
+# vcpkg Specific
+# =========================
+vcpkg_installed/
+/vcpkg-configuration.json
+/vcpkg-manifest-install.log
+
+# Don't ignore vcpkg.json in root directory (dependency manifest)
+!vcpkg.json
+
+# =========================
+# third_party Library Build Artifacts (Keep Source Code)
+# =========================
+third_party/*/build/
+third_party/*/bin/
+third_party/*/lib/
+third_party/*/*.log
+
+# =========================
+# IDE Configuration
+# =========================
+.idea/
+.vscode/
+*.code-workspace
+.clang-format
+
+# =========================
+# Build Scripts and Config
+# =========================
+build_run.py
+config.json
+
+# =========================
+# Temporary Files
+# =========================
+*.tmp
+*.bak
+*.swp
+*.cache
+*.temp
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/

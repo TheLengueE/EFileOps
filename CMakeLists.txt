@@ -156,6 +156,7 @@ set(ALL_SOURCES
 set(TS_FILES
     translations/fileops_zh_CN.ts
     translations/fileops_en_US.ts
+    translations/fileops_de_DE.ts
 )
 
 # Generate translation files
@@ -250,6 +251,7 @@ qt_add_qml_module(${PROJECT_NAME}
         icons/arrow-left.svg
         icons/arrow-right.svg
         icons/alert.svg
+        icons/EFileOps.png
 )
 
 # ===========================================================

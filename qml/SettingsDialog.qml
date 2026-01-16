@@ -84,7 +84,8 @@ Popup {
                         
                         model: [
                             { text: "简体中文", value: "zh_CN" },
-                            { text: "English", value: "en_US" }
+                            { text: "English", value: "en_US" },
+                            { text: "Deutsch", value: "de_DE" }
                         ]
                         
                         textRole: "text"

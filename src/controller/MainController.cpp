@@ -47,7 +47,7 @@ BaseResponse MainController::handleRequest(const BaseRequest &request)
 BaseResponse MainController::addFiles(const QStringList &filePaths)
 {
     int old_count = file_service_->fileCount();
-    
+
     setBusy(true);
     auto response = file_service_->addFiles(filePaths);
     setBusy(false);
@@ -58,16 +58,17 @@ BaseResponse MainController::addFiles(const QStringList &filePaths)
     // Auto-select newly added files (before sorting)
     if (response.success && file_list_model_)
     {
-        int new_count = file_service_->fileCount();
+        int new_count   = file_service_->fileCount();
         int added_count = new_count - old_count;
         if (added_count > 0)
         {
             file_list_model_->selectRange(old_count, new_count);
             qDebug() << "[MainController] Auto-selected newly added files, range:" << old_count << "to" << new_count;
-            
+
             // Apply default sort mode after selection
             int default_sort_mode = AppSettings::instance()->defaultSortMode();
-            file_service_->sortFiles((default_sort_mode == 1) ? FileService::SortType::ByModifiedTime : FileService::SortType::ByName);
+            file_service_->sortFiles((default_sort_mode == 1) ? FileService::SortType::ByModifiedTime
+                                                              : FileService::SortType::ByName);
             qDebug() << "[MainController] Applied default sort mode:" << default_sort_mode;
         }
     }
@@ -78,7 +79,7 @@ BaseResponse MainController::addFiles(const QStringList &filePaths)
 BaseResponse MainController::addFolder(const QString &folderPath, bool recursive)
 {
     int old_count = file_service_->fileCount();
-    
+
     setBusy(true);
     auto response = file_service_->addFolder(folderPath, recursive);
     setBusy(false);
@@ -89,16 +90,17 @@ BaseResponse MainController::addFolder(const QString &folderPath, bool recursive
     // Auto-select newly added files (before sorting)
     if (response.success && file_list_model_)
     {
-        int new_count = file_service_->fileCount();
+        int new_count   = file_service_->fileCount();
         int added_count = new_count - old_count;
         if (added_count > 0)
         {
             file_list_model_->selectRange(old_count, new_count);
             qDebug() << "[MainController] Auto-selected newly added files, range:" << old_count << "to" << new_count;
-            
+
             // Apply default sort mode after selection
             int default_sort_mode = AppSettings::instance()->defaultSortMode();
-            file_service_->sortFiles((default_sort_mode == 1) ? FileService::SortType::ByModifiedTime : FileService::SortType::ByName);
+            file_service_->sortFiles((default_sort_mode == 1) ? FileService::SortType::ByModifiedTime
+                                                              : FileService::SortType::ByName);
             qDebug() << "[MainController] Applied default sort mode:" << default_sort_mode;
         }
     }
@@ -160,7 +162,8 @@ BaseResponse MainController::addRule(const QString &ruleType, const QVariantMap 
     if (!rule->validate(&errorMsg))
     {
         delete rule;
-        return BaseResponse::Error(tr("Rule validation failed: %1").arg(errorMsg), RuleErrorCode::kRuleValidationFailed);
+        return BaseResponse::Error(tr("Rule validation failed: %1").arg(errorMsg),
+                                   RuleErrorCode::kRuleValidationFailed);
     }
 
     // Add rule to engine
@@ -255,13 +258,13 @@ BaseResponse MainController::loadRulesConfig(const QString &filePath)
     auto response = rule_engine_->loadFromFile(filePath);
     setStatusMessage(response.message);
     emit operationCompleted(response);
-    
+
     // Update preview after loading rules
     if (response.success)
     {
         updatePreview();
     }
-    
+
     return response;
 }
 
@@ -331,20 +334,170 @@ BaseResponse MainController::redo()
 
 BaseResponse MainController::saveProject(const QString &filePath)
 {
-    // TODO: Implement project save
-    return BaseResponse::Error(tr("Feature not implemented yet"), ErrorCode::NOT_IMPLEMENTED);
+    QJsonObject project;
+    project["version"] = "1.0";
+
+    // Save files
+    QJsonArray filesArray;
+    for (int i = 0; i < file_service_->fileCount(); ++i)
+    {
+        FileItem   *item = file_service_->getFile(i);
+        QJsonObject fileObj;
+        fileObj["originalPath"] = item->originalPath();
+        fileObj["newName"]      = item->newName();
+        filesArray.append(fileObj);
+    }
+    project["files"] = filesArray;
+
+    // Save rules
+    QJsonArray rulesArray;
+    for (int i = 0; i < rule_engine_->ruleCount(); ++i)
+    {
+        RuleBase *rule = rule_engine_->getRule(i);
+        if (rule)
+        {
+            rulesArray.append(rule->toJson());
+        }
+    }
+    project["rules"] = rulesArray;
+
+    // Write to file
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        return BaseResponse::Error(tr("Failed to save project: %1").arg(filePath), FileErrorCode::kFileOpenFailed);
+    }
+
+    QJsonDocument doc(project);
+    file.write(doc.toJson());
+    file.close();
+
+    return BaseResponse::Success(tr("Project saved successfully"));
 }
 
 BaseResponse MainController::loadProject(const QString &filePath)
 {
-    // TODO: Implement project load
-    return BaseResponse::Error(tr("Feature not implemented yet"), ErrorCode::NOT_IMPLEMENTED);
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        return BaseResponse::Error(tr("Failed to load project: %1").arg(filePath), FileErrorCode::kFileOpenFailed);
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (!doc.isObject())
+    {
+        return BaseResponse::Error(tr("Invalid project file format"), FileErrorCode::kFileFormatError);
+    }
+
+    QJsonObject project = doc.object();
+
+    // Clear current state
+    clearFiles();
+    clearRules();
+
+    // Load files
+    QJsonArray  filesArray = project["files"].toArray();
+    QStringList filePaths;
+    for (const QJsonValue &value : filesArray)
+    {
+        QJsonObject fileObj      = value.toObject();
+        QString     originalPath = fileObj["originalPath"].toString();
+        if (QFileInfo::exists(originalPath))
+        {
+            filePaths.append(originalPath);
+        }
+    }
+
+    if (!filePaths.isEmpty())
+    {
+        addFiles(filePaths);
+    }
+
+    // Load rules
+    QJsonArray rulesArray = project["rules"].toArray();
+    for (const QJsonValue &value : rulesArray)
+    {
+        QJsonObject ruleObj  = value.toObject();
+        QString     ruleType = ruleObj["ruleType"].toString();
+
+        // Create rule and load config
+        RuleBase *rule = RuleEngine::createRule(ruleType);
+        if (rule)
+        {
+            rule->fromJson(ruleObj);
+            auto response = rule_engine_->addRule(rule);
+            if (!response.success)
+            {
+                delete rule;
+            }
+        }
+    }
+
+    // Trigger preview
+    preview();
+
+    return BaseResponse::Success(tr("Project loaded successfully"));
 }
 
 BaseResponse MainController::exportRenameList(const QString &filePath)
 {
     // TODO: Implement export rename list
     return BaseResponse::Error(tr("Feature not implemented yet"), ErrorCode::NOT_IMPLEMENTED);
+}
+
+BaseResponse MainController::saveSession()
+{
+    QString sessionPath = AppSettings::instance()->getSessionFilePath();
+
+    // Ensure directory exists
+    QFileInfo fileInfo(sessionPath);
+    QDir().mkpath(fileInfo.absolutePath());
+
+    return saveProject(sessionPath);
+}
+
+BaseResponse MainController::loadSession()
+{
+    QString sessionPath = AppSettings::instance()->getSessionFilePath();
+
+    if (!QFileInfo::exists(sessionPath))
+    {
+        qDebug() << "[MainController] No session file found, starting fresh";
+        return BaseResponse::Success(tr("No previous session found"));
+    }
+
+    qDebug() << "[MainController] Loading session from:" << sessionPath;
+    return loadProject(sessionPath);
+}
+
+void MainController::autoSaveSession()
+{
+    if (!AppSettings::instance()->autoRestoreSession())
+    {
+        qDebug() << "[MainController] Auto restore disabled, skipping session save";
+        return;
+    }
+
+    // Only save if there are files or rules
+    if (file_service_->fileCount() == 0 && rule_engine_->ruleCount() == 0)
+    {
+        qDebug() << "[MainController] No content to save";
+        return;
+    }
+
+    qDebug() << "[MainController] Auto-saving session...";
+    auto response = saveSession();
+    if (response.success)
+    {
+        qDebug() << "[MainController] Session saved successfully";
+    }
+    else
+    {
+        qWarning() << "[MainController] Failed to save session:" << response.message;
+    }
 }
 
 void MainController::onFileCountChanged()

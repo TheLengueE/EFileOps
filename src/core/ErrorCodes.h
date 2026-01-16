@@ -17,6 +17,8 @@ constexpr const char *kFileRenameFailed  = "FILE_RENAME_FAILED";  // Rename fail
 constexpr const char *kFileInvalidPath   = "FILE_INVALID_PATH";   // Invalid path
 constexpr const char *kFolderEmpty       = "FOLDER_EMPTY";        // Folder is empty
 constexpr const char *kFolderNotExist    = "FOLDER_NOT_EXIST";    // Folder does not exist
+constexpr const char *kFileOpenFailed    = "FILE_OPEN_FAILED";    // Failed to open file
+constexpr const char *kFileFormatError   = "FILE_FORMAT_ERROR";   // Invalid file format
 } // namespace FileErrorCode
 
 namespace RuleErrorCode
