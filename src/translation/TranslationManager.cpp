@@ -1,6 +1,7 @@
 #include "TranslationManager.h"
 #include "../core/BaseRequest.h"
 #include "../core/BaseResponse.h"
+#include "../util/SimpleLog.h"
 #include <QCoreApplication>
 #include <QLocale>
 #include <QDebug>
@@ -21,53 +22,44 @@ TranslationManager::TranslationManager(QObject *parent)
     const QLocale system_locale      = QLocale::system();
     QString       system_locale_name = system_locale.name();
 
-    qDebug() << "[TranslationManager] System locale:" << system_locale_name;
-    qDebug() << "[TranslationManager] Translations path:" << translations_path_;
-
     // Determine initial language: Saved > System > English (source)
     QString initial_locale = "en_US"; // Default to English (source text language)
-    
+
     // Try to load saved language preference from settings
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
-    QString saved_locale = settings.value("language", "").toString();
-    
+    QString   saved_locale = settings.value("language", "").toString();
+
     if (!saved_locale.isEmpty() && IsValidLocale(saved_locale))
     {
         initial_locale = saved_locale;
-        qDebug() << "[TranslationManager] Using saved language preference:" << saved_locale;
+        SimpleLog::write("[TranslationManager] Using saved language preference: {}", saved_locale);
     }
     else if (IsValidLocale(system_locale_name))
     {
         // Use system language if supported
         initial_locale = system_locale_name;
-        qDebug() << "[TranslationManager] Using system language:" << system_locale_name;
+        SimpleLog::write("[TranslationManager] Using system language: {}", system_locale_name);
     }
     else
     {
-        qDebug() << "[TranslationManager] System language not supported, using English";
+        SimpleLog::write("[TranslationManager] System language not supported, using English");
     }
 
-    qDebug() << "[TranslationManager] ========== Initialization Start ==========";
-    qDebug() << "[TranslationManager] Available locales:" << available_locales_;
-    qDebug() << "[TranslationManager] Attempting to load language:" << initial_locale;
-    
+
     auto response = HandleSwitchLanguage(initial_locale);
     if (!response.success)
     {
-        qWarning() << "[TranslationManager] ✗ Failed to load language:" << response.message;
+        SimpleLog::write("[TranslationManager] ✗ Failed to load language: {}", response.message);
         // Fallback to English if initial language fails
         if (initial_locale != "en_US")
         {
-            qDebug() << "[TranslationManager] Falling back to English";
             HandleSwitchLanguage("en_US");
         }
     }
     else
     {
-        qDebug() << "[TranslationManager] ✓ Successfully loaded language:" << initial_locale;
+        SimpleLog::write("[TranslationManager] ✓ Successfully loaded language: {}", initial_locale);
     }
-    qDebug() << "[TranslationManager] ========== Initialization End ==========";
-    qDebug() << "";
 }
 
 TranslationManager::~TranslationManager()
@@ -87,17 +79,16 @@ void TranslationManager::InitializeAvailableLocales()
     QDir dir(translations_path_);
     if (dir.exists())
     {
-        qDebug() << "[TranslationManager] Available translations:";
         for (const QString &locale : available_locales_)
         {
             QString qm_file = QString("fileops_%1.qm").arg(locale);
             bool    exists  = QFileInfo::exists(dir.filePath(qm_file));
-            qDebug() << "  -" << locale << ":" << (exists ? "✓" : "✗");
+            SimpleLog::write("  - {} : {}", locale, (exists ? "✓" : "✗"));
         }
     }
     else
     {
-        qWarning() << "[TranslationManager] Translations directory not found:" << translations_path_;
+        SimpleLog::write("[TranslationManager] Translations directory not found: {}", translations_path_);
     }
 }
 
@@ -158,7 +149,6 @@ BaseResponse TranslationManager::HandleSwitchLanguage(QString locale)
     // Check if already set to current language
     if (current_locale_ == locale)
     {
-        qDebug() << "[TranslationManager] Language already set to:" << locale;
         return BaseResponse::Success(QString("Language already set to %1").arg(locale))
             .setData("currentLocale", locale)
             .setData("availableLocales", available_locales_);
@@ -168,31 +158,22 @@ BaseResponse TranslationManager::HandleSwitchLanguage(QString locale)
     QCoreApplication::removeTranslator(translator_);
 
     // Load new translation
-    const QString qm_file = QString("fileops_%1").arg(locale);
+    const QString qm_file   = QString("fileops_%1").arg(locale);
     const QString full_path = translations_path_ + "/" + qm_file + ".qm";
-    qDebug() << "[TranslationManager] ========== Loading Translation ==========";
-    qDebug() << "[TranslationManager] QM file name:" << qm_file;
-    qDebug() << "[TranslationManager] Full path:" << full_path;
-    qDebug() << "[TranslationManager] Translations path:" << translations_path_;
-    qDebug() << "[TranslationManager] File exists:" << QFileInfo::exists(full_path);
 
     if (translator_->load(qm_file, translations_path_))
     {
-        qDebug() << "[TranslationManager] ✓ QM file loaded successfully";
-        
+
         // Install new translator
         bool installed = QCoreApplication::installTranslator(translator_);
-        qDebug() << "[TranslationManager] Translator installed:" << (installed ? "✓ YES" : "✗ NO");
-        
+
         // **CRITICAL**: Send LanguageChange event to trigger UI retranslation
         // This forces all QML Text/Label components to re-evaluate their text bindings
         QEvent languageChangeEvent(QEvent::LanguageChange);
         QCoreApplication::sendEvent(QCoreApplication::instance(), &languageChangeEvent);
-        qDebug() << "[TranslationManager] ✓ LanguageChange event sent to QML engine";
-        
+
         // Test translation with English source text
         QString test_tr = QCoreApplication::translate("ReplaceRule", "Find and Replace");
-        qDebug() << "[TranslationManager] Test translation (Find and Replace):" << test_tr;
 
         // Update current locale
         QString old_locale = current_locale_;
@@ -202,11 +183,6 @@ BaseResponse TranslationManager::HandleSwitchLanguage(QString locale)
         QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
         settings.setValue("language", locale);
         settings.sync();
-
-        qDebug() << "[TranslationManager] ✓ Language switched:" << old_locale << "→" << locale;
-        qDebug() << "[TranslationManager] ✓ Language preference saved to settings";
-        qDebug() << "[TranslationManager] ========== Translation Loaded ==========";
-        qDebug() << "";
 
         // Create success response
         BaseResponse response = BaseResponse::Success(QString("Language switched to %1").arg(locale));
@@ -223,27 +199,28 @@ BaseResponse TranslationManager::HandleSwitchLanguage(QString locale)
     else
     {
         // Load failed, restore old translation
-        qWarning() << "[TranslationManager] ✗ Failed to load QM file";
-        qWarning() << "[TranslationManager] Attempted file:" << qm_file;
-        qWarning() << "[TranslationManager] Attempted path:" << translations_path_;
-        qWarning() << "[TranslationManager] Full file path:" << full_path;
-        
+        SimpleLog::write("[TranslationManager] ✗ Failed to load translation file: {}", full_path);
+
         QDir dir(translations_path_);
-        if (dir.exists()) {
+        if (dir.exists())
+        {
             qWarning() << "[TranslationManager] Directory contents:";
             QStringList files = dir.entryList(QDir::Files);
-            for (const QString &file : files) {
+            for (const QString &file : files)
+            {
                 qWarning() << "  -" << file;
             }
-        } else {
-            qWarning() << "[TranslationManager] ✗ Translations directory does not exist!";
+        }
+        else
+        {
+            SimpleLog::write("[TranslationManager] ✗ Translations directory does not exist: {}", translations_path_);
         }
 
         const QString old_qm_file = QString("fileops_%1").arg(current_locale_);
         if (translator_->load(old_qm_file, translations_path_))
         {
             QCoreApplication::installTranslator(translator_);
-            qDebug() << "[TranslationManager] Restored previous translator:" << old_qm_file;
+            SimpleLog::write("[TranslationManager] ✓ Restored previous translator: {}", old_qm_file);
         }
 
         return BaseResponse::Error(

@@ -7,15 +7,12 @@ AppSettings *AppSettings::instance_ = nullptr;
 AppSettings::AppSettings(QObject *parent)
     : QObject(parent), settings_(nullptr), ignore_extension_(false), // Default: do not ignore extension
       default_sort_mode_(0),                                         // Default: sort by name
-      language_("zh_CN"),                                            // Default: Chinese
+      language_("en_US"),                                            // Default: English
       auto_restore_session_(true)                                    // Default: auto restore
 {
     // Create QSettings using application organization and name
-    settings_ = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this
+    settings_ = new QSettings(QCoreApplication::organizationName(), QCoreApplication::applicationName(), this);
 
-    );
-
-    // Load settings
     load();
 }
 
