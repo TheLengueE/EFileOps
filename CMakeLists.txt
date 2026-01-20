@@ -95,6 +95,7 @@ set(CONTROLLER_SOURCES
 # Utility headers
 set(UTIL_HEADERS
     src/util/FileSystemHelper.h
+    src/util/SimpleLog.h
 )
 
 # Utility sources

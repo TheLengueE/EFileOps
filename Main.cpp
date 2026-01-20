@@ -2,6 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
+#include <QtGlobal>
 #include <QDebug>
 #include "src/core/BaseRequest.h"
 #include "src/core/BaseResponse.h"
@@ -9,11 +10,46 @@
 #include "src/translation/TranslationManager.h"
 #include "src/controller/MainController.h"
 #include "src/model/FileListModel.h"
+#include "src/util/SimpleLog.h"
+
+// catch qml message function
+static void qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString level;
+
+    switch (type)
+    {
+    case QtDebugMsg:
+        level = "DEBUG";
+        break;
+    case QtInfoMsg:
+        level = "INFO";
+        break;
+    case QtWarningMsg:
+        level = "WARN";
+        break;
+    case QtCriticalMsg:
+        level = "ERROR";
+        break;
+    case QtFatalMsg:
+        level = "FATAL";
+        break;
+    }
+
+    QString line =
+        QString("[%1] [%2] %3").arg(QDateTime::currentDateTime().toString("HH:mm:ss.zzz")).arg(level).arg(msg);
+
+    SimpleLog::write("{}", line);
+}
 
 int main(int argc, char *argv[])
 {
-    // Initialize application
     QGuiApplication app(argc, argv);
+
+    // Initialize qInstallMessageHandler
+#ifdef QT_DEBUG
+    qInstallMessageHandler(qtMessageHandler);
+#endif
 
     // Set application metadata
     app.setOrganizationName("EFileOps");
@@ -21,7 +57,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("EFileOps");
     app.setApplicationVersion("1.0.0");
 
-    // Set UI style
+    // Set Qt UI style
     QQuickStyle::setStyle("Basic");
 
     // Initialize application settings (singleton)
@@ -41,7 +77,6 @@ int main(int argc, char *argv[])
     // Create and register translation manager instance
     TranslationManager translation_manager;
     engine.rootContext()->setContextProperty("translationManager", &translation_manager);
-
     QObject::connect(&translation_manager, &TranslationManager::languageChanged, [&engine]() { engine.retranslate(); });
 
     // Create and register main controller instance
@@ -58,7 +93,7 @@ int main(int argc, char *argv[])
     // Auto-restore session if enabled
     if (AppSettings::instance()->autoRestoreSession())
     {
-        qDebug() << "[Main] Auto-restore enabled, loading previous session...";
+        SimpleLog::write("[Main] Auto-restore enabled, loading previous session...");
         main_controller.loadSession();
     }
 
@@ -66,7 +101,7 @@ int main(int argc, char *argv[])
     QObject::connect(&app, &QGuiApplication::aboutToQuit,
                      [&main_controller]()
                      {
-                         qDebug() << "[Main] Application closing, saving session...";
+                         SimpleLog::write("[Main] Application closing, saving session...");
                          main_controller.autoSaveSession();
                      });
 
@@ -84,21 +119,20 @@ int main(int argc, char *argv[])
         {
             if (!obj && main_qml_url == obj_url)
             {
+                SimpleLog::write("[Main] Failed to load main QML file, exiting application.");
                 QCoreApplication::exit(-1);
             }
         },
         Qt::QueuedConnection);
 
-    // Load QML
     engine.load(main_qml_url);
 
     // Check if loading was successful
     if (engine.rootObjects().isEmpty())
     {
-        qCritical() << "Failed to load QML!";
+        SimpleLog::write("[Main] No root objects found after loading QML, exiting application.");
         return -1;
     }
 
-    // Start event loop
     return app.exec();
 }
