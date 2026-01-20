@@ -12,8 +12,19 @@ Menu {
     // Signals
     signal itemClicked(int index)
     
-    // Size
-    implicitWidth: 180
+    // Size - auto-adjust based on content
+    implicitWidth: {
+        var maxWidth = 180
+        for (var i = 0; i < menuItems.length; i++) {
+            var item = menuItems[i]
+            var text = item.text || item
+            var estimatedWidth = text.length * 8 + 60  // Rough estimate
+            if (estimatedWidth > maxWidth) {
+                maxWidth = Math.min(estimatedWidth, 300)  // Max 300px
+            }
+        }
+        return maxWidth
+    }
     
     padding: 4
     
@@ -44,6 +55,7 @@ Menu {
             
             contentItem: Row {
                 spacing: EUITheme.spacingMedium
+                width: root.width - root.padding * 2
                 
                 // Icon
                 Text {
@@ -61,10 +73,14 @@ Menu {
                     text: modelData.text || modelData
                     color: parent.parent.enabled ? EUITheme.colorText : EUITheme.colorTextDisabled
                     font.pixelSize: EUITheme.fontBody
+                    elide: Text.ElideRight
+                    maximumLineCount: 1
+                    width: parent.width - 20 - parent.spacing - (shortcutText.visible ? shortcutText.width + parent.spacing : 0)
                 }
                 
                 // Shortcut hint
                 Text {
+                    id: shortcutText
                     anchors.verticalCenter: parent.verticalCenter
                     text: modelData.shortcut || ""
                     color: EUITheme.colorTextSubtle

@@ -256,6 +256,11 @@ Rectangle {
                         executionStatus: model.executionStatus
                         executionStatusText: model.executionStatusText
                         onItemClicked: fileListModel.toggleSelection(index)
+                        onItemRightClicked: (mouseX, mouseY) => {
+                            // Use global index (fileIndex is 1-based, convert to 0-based)
+                            contextMenuWrapper.currentIndex = model.fileIndex - 1
+                            contextMenu.popup()
+                        }
                     }
                 }
                 
@@ -309,6 +314,42 @@ Rectangle {
                     }
                 }
             }
+        }
+    }
+    
+    // Context menu wrapper
+    Item {
+        id: contextMenuWrapper
+        property int currentIndex: -1
+        
+        EPopupMenu {
+            id: contextMenu
+            
+            menuItems: [
+                {
+                    icon: "",
+                    text: I18n.tr("CenterPanel", "Open File Location"),
+                    action: function() {
+                        if (contextMenuWrapper.currentIndex >= 0) {
+                            var response = mainController.openFileLocation(contextMenuWrapper.currentIndex)
+                            if (!response.success) {
+                                console.error("Failed to open file location:", response.message)
+                            }
+                        }
+                    }
+                },
+                {
+                    icon: "",
+                    text: I18n.tr("CenterPanel", "Remove from List"),
+                    action: function() {
+                        if (contextMenuWrapper.currentIndex >= 0) {
+                            console.log("[ContextMenu] Removing file at index:", contextMenuWrapper.currentIndex)
+                            var response = mainController.removeFiles([contextMenuWrapper.currentIndex])
+                            console.log("[ContextMenu] Remove response:", response.success, response.message)
+                        }
+                    }
+                }
+            ]
         }
     }
     

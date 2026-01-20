@@ -83,6 +83,7 @@ class FileListModel : public QAbstractListModel
     void onFileCountChanged();
     void onFilesAdded(int count);
     void onFilesRemoved(int count);
+    void onFilesRemovedWithIndices(const QList<int> &removedIndices);
     void onAllFilesCleared();
     void onFilesRestored();
     void onFileUpdated(int index);

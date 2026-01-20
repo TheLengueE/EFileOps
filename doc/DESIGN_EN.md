@@ -25,10 +25,6 @@ Model ←→ View ←→ Controller
 [ FileItem / RuleBase ] ← Domain Models
 ```
 
-Global settings (`AppSettings`) and internationalization (`TranslationManager`) and other modules exist as independent auxiliary modules.
-
----
-
 ## 2. Core Modules
 
 ### 2.1 MainController (Controller)
@@ -54,11 +50,11 @@ Global settings (`AppSettings`) and internationalization (`TranslationManager`) 
 **Responsibility**: Manages rule chain, executes rule sequences, generates rename results.
 
 **Rule Types**:
-- **Replace**: Find and replace (supports case-sensitive, regular expressions)
-- **Remove**: Remove files containing keywords (removes from list, not deleting characters)
+- **Replace**: Find and replace 
+- **Remove**: Remove files containing keywords
 - **AddPrefix/AddSuffix**: Add prefix/suffix
-- **CaseTransform**: Case transformation (uppercase, lowercase, title case, camel case, snake case, kebab case, and 7 formats total)
-- **Numbering**: Number sequencing (supports prefix/suffix position, start value, zero-padding digits)
+- **CaseTransform**: Case transformation
+- **Numbering**: Number sequencing
 
 **Execution Model**: Rules are applied sequentially, with each rule's output serving as input for the next rule (pipeline pattern).
 
@@ -69,7 +65,7 @@ Global settings (`AppSettings`) and internationalization (`TranslationManager`) 
 
 **Features**:
 - Implements `QAbstractListModel` interface
-- Automatically listens to FileService changes (add, delete, rename), updating UI in real-time
+- Lstens to FileService changes (add, delete, rename), updating UI in real-time
 - Provides fields like index, original name, preview name, status for UI binding
 
 ---

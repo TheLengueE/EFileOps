@@ -3,6 +3,11 @@
 #include "../util/FileSystemHelper.h"
 #include "../model/FileListModel.h"
 #include "../core/AppSettings.h"
+#include <QDesktopServices>
+#include <QUrl>
+#include <QFileInfo>
+#include <QDir>
+#include <QProcess>
 
 MainController::MainController(QObject *parent)
     : QObject(parent), file_service_(new FileService(this)), rule_engine_(new RuleEngine(this)), is_busy_(false)
@@ -142,6 +147,74 @@ int MainController::getFolderFileCount(const QString &folderPath, bool recursive
 {
     QStringList files = FileSystemHelper::getFilesInDirectory(folderPath, recursive);
     return files.size();
+}
+
+BaseResponse MainController::openFileLocation(int index)
+{
+    // Validate index
+    if (index < 0 || index >= file_service_->fileCount())
+    {
+        return BaseResponse::Error(tr("Invalid file index: %1").arg(index), ErrorCode::INVALID_PARAM);
+    }
+
+    // Get file path
+    FileItem *item = file_service_->getFile(index);
+    if (!item)
+    {
+        return BaseResponse::Error(tr("File not found at index: %1").arg(index), FileErrorCode::kFileNotExist);
+    }
+
+    QString file_path = item->originalPath();
+    QFileInfo file_info(file_path);
+
+    // Check if file exists
+    if (!file_info.exists())
+    {
+        return BaseResponse::Error(tr("File does not exist: %1").arg(file_path), FileErrorCode::kFileNotExist);
+    }
+
+    // Get directory path
+    QString dir_path = file_info.absolutePath();
+    bool success = false;
+
+#ifdef Q_OS_WIN
+    // On Windows, use explorer.exe with /select parameter to select the file
+    QString native_path = QDir::toNativeSeparators(file_info.absoluteFilePath());
+    QProcess process;
+    process.setProgram("explorer.exe");
+    process.setArguments({"/select,", native_path});
+    success = process.startDetached();
+    
+    if (!success)
+    {
+        // Fallback: Just open the folder
+        success = QDesktopServices::openUrl(QUrl::fromLocalFile(dir_path));
+    }
+#elif defined(Q_OS_MAC)
+    // On macOS, use 'open -R' to reveal the file in Finder
+    QProcess process;
+    process.setProgram("open");
+    process.setArguments({"-R", file_path});
+    success = process.startDetached();
+    
+    if (!success)
+    {
+        // Fallback: Just open the folder
+        success = QDesktopServices::openUrl(QUrl::fromLocalFile(dir_path));
+    }
+#else
+    // On Linux, just open the folder (no standard way to select file)
+    success = QDesktopServices::openUrl(QUrl::fromLocalFile(dir_path));
+#endif
+
+    if (success)
+    {
+        return BaseResponse::Success(tr("Opened file location"));
+    }
+    else
+    {
+        return BaseResponse::Error(tr("Failed to open file location"), ErrorCode::OPERATION_FAILED);
+    }
 }
 
 BaseResponse MainController::addRule(const QString &ruleType, const QVariantMap &config)
@@ -691,3 +764,29 @@ bool MainController::validateRequest(const BaseRequest &request, const QStringLi
     }
     return true;
 }
+
+void MainController::setFileListModel(FileListModel *model)
+{
+    file_list_model_ = model;
+    if (file_list_model_)
+    {
+        // Connect selection changed signal to sync selected_indices_
+        connect(file_list_model_, &FileListModel::selectionChanged, this, &MainController::onFileListSelectionChanged);
+    }
+}
+
+void MainController::onFileListSelectionChanged()
+{
+    if (file_list_model_)
+    {
+        selected_indices_ = file_list_model_->getSelectedIndices();
+        qDebug() << "[MainController] Synced selection from FileListModel, count:" << selected_indices_.size();
+        
+        // Auto update preview when selection state changes
+        if (rule_engine_->ruleCount() > 0)
+        {
+            updatePreview();
+        }
+    }
+}
+

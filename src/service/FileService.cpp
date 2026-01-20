@@ -251,8 +251,58 @@ BaseResponse FileService::removeFile(int index)
 
 BaseResponse FileService::removeFiles(const QList<int> &indices)
 {
-    // TODO: Implement batch removal
-    return BaseResponse::Error(tr("Feature not implemented yet"), ErrorCode::NOT_IMPLEMENTED);
+    qDebug() << "[FileService::removeFiles] Called with indices:" << indices;
+    
+    if (indices.isEmpty())
+    {
+        return BaseResponse::Error(tr("No files to remove"), ErrorCode::INVALID_PARAM);
+    }
+
+    // Save original indices (unsorted) for the signal
+    QList<int> original_indices = indices;
+    
+    // Create a sorted list of unique indices in descending order
+    // This ensures we remove from the end to avoid index shifting issues
+    QList<int> sorted_indices = indices;
+    std::sort(sorted_indices.begin(), sorted_indices.end(), std::greater<int>());
+    
+    // Remove duplicates
+    sorted_indices.erase(std::unique(sorted_indices.begin(), sorted_indices.end()), sorted_indices.end());
+
+    qDebug() << "[FileService::removeFiles] Sorted indices:" << sorted_indices;
+    qDebug() << "[FileService::removeFiles] Current file count:" << files_.size();
+
+    // Validate all indices first
+    for (int index : sorted_indices)
+    {
+        if (index < 0 || index >= files_.size())
+        {
+            qDebug() << "[FileService::removeFiles] Invalid index:" << index;
+            return BaseResponse::Error(tr("Invalid index: %1").arg(index), ErrorCode::INVALID_PARAM);
+        }
+    }
+
+    // Remove files from end to start
+    int removed_count = 0;
+    for (int index : sorted_indices)
+    {
+        // Remove from cache
+        FileItem *item = files_[index];
+        QFileInfo file_info(item->originalPath());
+        file_path_cache_.remove(file_info.canonicalFilePath());
+
+        // Delete and remove from list
+        delete files_.takeAt(index);
+        removed_count++;
+    }
+
+    qDebug() << "[FileService::removeFiles] Removed" << removed_count << "file(s), new count:" << files_.size();
+
+    emit fileCountChanged();
+    emit filesRemoved(removed_count);
+    emit filesRemovedWithIndices(sorted_indices); // Send sorted indices (in original order before removal)
+
+    return BaseResponse::Success(tr("Removed %1 file(s)").arg(removed_count));
 }
 
 BaseResponse FileService::clear()

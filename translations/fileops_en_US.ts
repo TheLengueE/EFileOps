@@ -751,6 +751,14 @@
             <translation>No files selected</translation>
         </message>
         <message>
+            <source>Open File Location</source>
+            <translation>Open File Location</translation>
+        </message>
+        <message>
+            <source>Remove from List</source>
+            <translation>Remove from List</translation>
+        </message>
+        <message>
             <source>No.</source>
             <translation>No.</translation>
         </message>
@@ -980,10 +988,6 @@ Do you want to continue?</translation>
     <context>
         <name>Main</name>
         <!-- === QML Translations === -->
-        <message>
-            <source>EFileOps</source>
-            <translation>EFileOps</translation>
-        </message>
         <message>
             <source>Hello World</source>
             <translation>Hello World</translation>

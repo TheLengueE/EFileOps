@@ -25,10 +25,6 @@ Model ←→ View ←→ Controller
 [ FileItem / RuleBase ] ← 领域模型
 ```
 
-全局设置（`AppSettings`）和国际化（`TranslationManager`）等其它模块作为独立的辅助模块存在。
-
----
-
 ## 二、核心模块
 
 ### 2.1 MainController（控制器）
@@ -54,11 +50,11 @@ Model ←→ View ←→ Controller
 **职责**: 管理规则链，执行规则序列，生成重命名结果。
 
 **规则类型**:
-- **Replace**: 查找替换（支持大小写敏感、正则表达式）
-- **Remove**: 移除包含关键词的文件（从列表中删除，不是删除字符）
+- **Replace**: 查找替换
+- **Remove**: 移除包含关键词的文件
 - **AddPrefix/AddSuffix**: 添加前缀/后缀
-- **CaseTransform**: 大小写转换（全大写、全小写、标题格式、驼峰、蛇形、短横线等7种格式）
-- **Numbering**: 序号编号（支持前缀/后缀位置、起始值、补零位数）
+- **CaseTransform**: 大小写转换
+- **Numbering**: 序号编号
 
 **执行模型**: 规则按顺序依次应用，每条规则的输出作为下一条规则的输入（管道模式）。
 
@@ -69,7 +65,7 @@ Model ←→ View ←→ Controller
 
 **特点**:
 - 实现 `QAbstractListModel` 接口
-- 自动监听 FileService 的变化（添加、删除、重命名），实时更新 UI
+- 监听 FileService 的变化（添加、删除、重命名），实时更新 UI
 - 提供序号、原始名、预览名、状态等字段供 UI 绑定
 
 ---

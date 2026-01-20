@@ -12,6 +12,7 @@ FileListModel::FileListModel(FileService *fileService, QObject *parent)
     connect(file_service_, &FileService::fileCountChanged, this, &FileListModel::onFileCountChanged);
     connect(file_service_, &FileService::filesAdded, this, &FileListModel::onFilesAdded);
     connect(file_service_, &FileService::filesRemoved, this, &FileListModel::onFilesRemoved);
+    connect(file_service_, &FileService::filesRemovedWithIndices, this, &FileListModel::onFilesRemovedWithIndices);
     connect(file_service_, &FileService::allFilesCleared, this, &FileListModel::onAllFilesCleared);
     connect(file_service_, &FileService::filesRestored, this, &FileListModel::onFilesRestored);
     connect(file_service_, &FileService::fileUpdated, this, &FileListModel::onFileUpdated);
@@ -285,12 +286,70 @@ void FileListModel::onFilesAdded(int addedCount)
 
 void FileListModel::onFilesRemoved(int count)
 {
+    // This slot is kept for backward compatibility
+    // Actual selection adjustment is done in onFilesRemovedWithIndices
+    // Only update UI if filesRemovedWithIndices was not triggered
+    
+    qDebug() << "[FileListModel::onFilesRemoved] Removed" << count << "file(s) (fallback handler)";
+    
+    // Note: We don't adjust selection here because we don't know which indices were removed
+    // If only this signal is triggered (old code path), we clear selection as a safe fallback
+    // But the new signal filesRemovedWithIndices should be triggered instead
+}
+
+void FileListModel::onFilesRemovedWithIndices(const QList<int> &removedIndices)
+{
+    qDebug() << "[FileListModel::onFilesRemovedWithIndices] ========== START ==========";
+    qDebug() << "  Removed indices:" << removedIndices;
+    qDebug() << "  Before - Selected indices:" << selected_indices_;
+    qDebug() << "  Before - Total file count:" << file_service_->fileCount() + removedIndices.size();
+    
+    // Adjust selection indices after removal
+    // For each removed index, decrease all indices greater than it by 1
+    
+    QSet<int> adjusted_selection;
+    
+    for (int selectedIdx : selected_indices_)
+    {
+        qDebug() << "  Processing selected index:" << selectedIdx;
+        
+        // Check if this index was removed
+        if (removedIndices.contains(selectedIdx))
+        {
+            qDebug() << "    -> This index was removed, skipping";
+            // This file was removed, don't keep it in selection
+            continue;
+        }
+        
+        // Count how many removed indices are less than this selected index
+        int offset = 0;
+        for (int removedIdx : removedIndices)
+        {
+            if (removedIdx < selectedIdx)
+            {
+                offset++;
+                qDebug() << "    -> Removed index" << removedIdx << "< selected index" << selectedIdx << ", offset now =" << offset;
+            }
+        }
+        
+        // Adjust the index by subtracting the offset
+        int new_index = selectedIdx - offset;
+        qDebug() << "    -> New index:" << new_index << "(offset was" << offset << ")";
+        adjusted_selection.insert(new_index);
+    }
+    
+    selected_indices_ = adjusted_selection;
+    
+    qDebug() << "  After - Selected indices:" << selected_indices_;
+    qDebug() << "  After - Total file count:" << file_service_->fileCount();
+    qDebug() << "[FileListModel::onFilesRemovedWithIndices] ========== END ==========";
+    
     beginResetModel();
-    selected_indices_.clear();
     endResetModel();
 
     updatePagination();
     emit selectedCountChanged();
+    emit selectionChanged();  // Notify selection state changed
     emit totalCountChanged();
 }
 

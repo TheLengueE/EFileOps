@@ -7,6 +7,7 @@ Rectangle {
     height: 50
     
     signal itemClicked()
+    signal itemRightClicked(int mouseX, int mouseY)
     
     property bool isSelected: false
     property int fileIndex: 0
@@ -119,6 +120,13 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.itemClicked()
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: (mouse) => {
+            if (mouse.button === Qt.LeftButton) {
+                root.itemClicked()
+            } else if (mouse.button === Qt.RightButton) {
+                root.itemRightClicked(mouse.x, mouse.y)
+            }
+        }
     }
 }

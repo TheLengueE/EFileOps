@@ -68,6 +68,7 @@ class MainController : public QObject
     Q_INVOKABLE BaseResponse removeFiles(const QList<int> &indices);
     Q_INVOKABLE BaseResponse clearFiles();
     Q_INVOKABLE int          getFolderFileCount(const QString &folderPath, bool recursive = false);
+    Q_INVOKABLE BaseResponse openFileLocation(int index);
 
     // Rule operations
     Q_INVOKABLE BaseResponse addRule(const QString &ruleType, const QVariantMap &config = QVariantMap());
@@ -99,7 +100,7 @@ class MainController : public QObject
     Q_INVOKABLE void         autoSaveSession(); // Called when app is about to quit
 
     // Set FileListModel reference (called from Main.cpp)
-    void setFileListModel(FileListModel *model) { file_list_model_ = model; }
+    void setFileListModel(FileListModel *model);
 
   signals:
     void statusMessageChanged();
@@ -113,6 +114,7 @@ class MainController : public QObject
     void onFileCountChanged();
     void onRuleCountChanged();
     void onRenameExecuted(int successCount, int failureCount);
+    void onFileListSelectionChanged(); // Sync selection state from FileListModel
 
   private:
     // ========== Request handlers (classified by module) ==========

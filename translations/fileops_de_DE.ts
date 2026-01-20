@@ -751,6 +751,14 @@
             <translation>Keine Dateien ausgewählt</translation>
         </message>
         <message>
+            <source>Open File Location</source>
+            <translation>Dateispeicherort öffnen</translation>
+        </message>
+        <message>
+            <source>Remove from List</source>
+            <translation>Aus Liste entfernen</translation>
+        </message>
+        <message>
             <source>No.</source>
             <translation>Nr.</translation>
         </message>
@@ -980,10 +988,6 @@ Möchten Sie fortfahren?</translation>
     <context>
         <name>Main</name>
         <!-- === QML Translations === -->
-        <message>
-            <source>EFileOps</source>
-            <translation>EFileOps</translation>
-        </message>
         <message>
             <source>Hello World</source>
             <translation>Hallo Welt</translation>

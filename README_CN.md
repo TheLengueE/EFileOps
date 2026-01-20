@@ -1,9 +1,21 @@
 # EFileOps
 
+<div align="center">
+
+[中文](README_CN.md) | [English](README.md)
+
+</div>
+
+---
+
 安全、简洁为核心的 Windows 批量文件重命名工具。  
 通过组合规则完成复杂改名，并通过预览与回滚机制保障操作安全。
 
-[English README](README.md)
+如果你需要下载安装包：
+- [Release](https://github.com/TheLengueE/EFileOps/releases/latest)
+
+项目的大致设计请参考：
+- [设计文档](doc/DESIGN_ZH.md)
 
 ---
 

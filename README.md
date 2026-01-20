@@ -1,9 +1,21 @@
 # EFileOps
 
+<div align="center">
+
+ [English](README.md) | [中文](README_CN.md) 
+
+</div>
+
+---
+
 A safe and minimal batch file renaming tool for Windows.
 It supports complex renaming workflows through rule combinations, with preview and rollback mechanisms to ensure operation safety.
 
-[中文说明](README_CN.md)
+If you need to download the installer:
+- [Release](https://github.com/TheLengueE/EFileOps/releases/latest)
+
+For detailed project design, please refer to:
+- [Design Document](doc/DESIGN_EN.md)
 
 ---
 

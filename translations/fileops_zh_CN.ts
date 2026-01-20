@@ -751,6 +751,14 @@
             <translation>未选择文件</translation>
         </message>
         <message>
+            <source>Open File Location</source>
+            <translation>打开文件位置</translation>
+        </message>
+        <message>
+            <source>Remove from List</source>
+            <translation>从列表中移除</translation>
+        </message>
+        <message>
             <source>No.</source>
             <translation>序号</translation>
         </message>
@@ -975,10 +983,6 @@
     <context>
         <name>Main</name>
         <!-- === QML Translations === -->
-        <message>
-            <source>EFileOps</source>
-            <translation>EFileOps</translation>
-        </message>
         <message>
             <source>Hello World</source>
             <translation>你好世界</translation>

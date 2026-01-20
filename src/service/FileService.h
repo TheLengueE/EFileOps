@@ -77,6 +77,7 @@ class FileService : public QObject
     void fileCountChanged();
     void filesAdded(int count);
     void filesRemoved(int count);
+    void filesRemovedWithIndices(const QList<int> &removedIndices); // New: includes removed indices
     void fileUpdated(int index);
     void allFilesCleared();
     void filesRestored(); // Restore file list after undo/redo
