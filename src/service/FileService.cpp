@@ -56,7 +56,6 @@ BaseResponse FileService::addFiles(const QStringList &filePaths)
     QElapsedTimer total_timer;
     total_timer.start();
 
-    qDebug() << "========== addFiles Start ==========" << "Path count:" << filePaths.size();
 
     int         added_count   = 0;
     int         skipped_count = 0;
@@ -133,8 +132,6 @@ BaseResponse FileService::addFiles(const QStringList &filePaths)
             qint64      dir_scan_start = scan_timer.nsecsElapsed();
             QStringList dir_files    = FileSystemHelper::getFilesInDirectory(path, true, remaining); // Limit scan count
             qint64      dir_scan_end = scan_timer.nsecsElapsed();
-            qDebug() << "  [Directory Scan]" << path << "Found" << dir_files.size() << "files (limit:" << remaining
-                     << "), elapsed:" << (dir_scan_end - dir_scan_start) / 1000000.0 << "ms";
 
             qint64 add_start = scan_timer.nsecsElapsed();
             for (const QString &file_path : dir_files)
@@ -165,34 +162,27 @@ BaseResponse FileService::addFiles(const QStringList &filePaths)
                 added_count++;
             }
             qint64 add_end = scan_timer.nsecsElapsed();
-            qDebug() << "  [Add Files]" << "Added" << dir_files.size()
-                     << "files, elapsed:" << (add_end - add_start) / 1000000.0 << "ms";
         }
     }
 
     qint64 scan_elapsed = scan_timer.elapsed();
-    qDebug() << "  [Total Scan+Add Time]" << scan_elapsed << "ms";
 
     QElapsedTimer signal_timer;
     signal_timer.start();
 
     if (added_count > 0)
     {
-        qDebug() << "  [Emit Signals] fileCountChanged + filesAdded(" << added_count << ")";
         emit fileCountChanged();
         emit filesAdded(added_count);
     }
 
     qint64 signal_elapsed = signal_timer.elapsed();
-    qDebug() << "  [Signal Processing Time]" << signal_elapsed << "ms";
 
     QVariantMap data;
     data["addedCount"]   = added_count;
     data["skippedCount"] = skipped_count;
 
     qint64 total_elapsed = total_timer.elapsed();
-    qDebug() << "========== addFiles Complete ==========" << "Total time:" << total_elapsed << "ms"
-             << "Added:" << added_count << "Skipped:" << skipped_count;
 
     if (added_count == 0)
     {
@@ -216,7 +206,8 @@ BaseResponse FileService::addFolder(const QString &folderPath, bool recursive)
 
     if (!dir_info.exists() || !dir_info.isDir())
     {
-        return BaseResponse::Error(tr("Folder does not exist or is invalid: %1").arg(folderPath), FileErrorCode::kFolderNotExist);
+        return BaseResponse::Error(tr("Folder does not exist or is invalid: %1").arg(folderPath),
+                                   FileErrorCode::kFolderNotExist);
     }
 
     QStringList files = FileSystemHelper::getFilesInDirectory(folderPath, recursive);
@@ -251,8 +242,7 @@ BaseResponse FileService::removeFile(int index)
 
 BaseResponse FileService::removeFiles(const QList<int> &indices)
 {
-    qDebug() << "[FileService::removeFiles] Called with indices:" << indices;
-    
+
     if (indices.isEmpty())
     {
         return BaseResponse::Error(tr("No files to remove"), ErrorCode::INVALID_PARAM);
@@ -260,24 +250,20 @@ BaseResponse FileService::removeFiles(const QList<int> &indices)
 
     // Save original indices (unsorted) for the signal
     QList<int> original_indices = indices;
-    
+
     // Create a sorted list of unique indices in descending order
     // This ensures we remove from the end to avoid index shifting issues
     QList<int> sorted_indices = indices;
     std::sort(sorted_indices.begin(), sorted_indices.end(), std::greater<int>());
-    
+
     // Remove duplicates
     sorted_indices.erase(std::unique(sorted_indices.begin(), sorted_indices.end()), sorted_indices.end());
-
-    qDebug() << "[FileService::removeFiles] Sorted indices:" << sorted_indices;
-    qDebug() << "[FileService::removeFiles] Current file count:" << files_.size();
 
     // Validate all indices first
     for (int index : sorted_indices)
     {
         if (index < 0 || index >= files_.size())
         {
-            qDebug() << "[FileService::removeFiles] Invalid index:" << index;
             return BaseResponse::Error(tr("Invalid index: %1").arg(index), ErrorCode::INVALID_PARAM);
         }
     }
@@ -296,7 +282,6 @@ BaseResponse FileService::removeFiles(const QList<int> &indices)
         removed_count++;
     }
 
-    qDebug() << "[FileService::removeFiles] Removed" << removed_count << "file(s), new count:" << files_.size();
 
     emit fileCountChanged();
     emit filesRemoved(removed_count);
@@ -555,19 +540,14 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
     saveSnapshot();
 
     // Separate files to be removed and files to be renamed
-    QList<int>                 files_to_remove; // Indices to be removed (from list)
-    QList<QPair<int, QString>> rename_list;     // <Index, New path>
-    QList<QString>             original_paths;  // For rollback
+    QList<int>                 files_to_remove;       // Indices to be removed (from list)
+    QList<QPair<int, QString>> rename_list;           // <Index, New path>
+    QList<QString>             original_paths;        // For rollback
     int                        pre_failure_count = 0; // Count failures before execution
 
     for (int index : selectedIndices)
     {
         FileItem *file = files_[index];
-
-        qDebug() << "  [File" << index << "]" << file->fileName() + file->extension();
-        qDebug() << "    Original name:" << file->fileName() + file->extension();
-        qDebug() << "    New name:" << file->newName();
-        qDebug() << "    Is modified:" << file->isModified();
 
         // Check if marked for deletion
         if (file->newName() == "[To be removed]")
@@ -579,7 +559,6 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
         // Skip files without modifications
         if (file->newName().isEmpty() || !file->isModified())
         {
-            qDebug() << "    [Skip] Reason:" << (file->newName().isEmpty() ? "New name is empty" : "Not modified");
             continue;
         }
 
@@ -587,23 +566,16 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
         QString new_path = file->getNewPath();
         QString old_path = file->originalPath();
 
-        qDebug() << "    New path:" << new_path;
-        qDebug() << "    Original path:" << old_path;
-        qDebug() << "    Paths same?" << (new_path == old_path);
-        qDebug() << "    QFileInfo::exists(new_path)?" << QFileInfo::exists(new_path);
-
         // For Windows case-insensitive file systems, allow rename if only case changes
         // Use canonical path comparison to check if pointing to same file
         QFileInfo new_info(new_path);
         QFileInfo old_info(old_path);
         bool      is_same_file = (new_info.absoluteFilePath().toLower() == old_info.absoluteFilePath().toLower());
 
-        qDebug() << "    Is same file (ignore case)?" << is_same_file;
 
         // If new path exists and not the same file (case-sensitive comparison), report error
         if (!is_same_file && QFileInfo::exists(new_path))
         {
-            qDebug() << "    [Error] Target file already exists";
             file->setHasError(true);
             file->setErrorMessage(tr("Failed"));
             file->setExecutionStatus(FileItem::ExecutionStatus::Failed);
@@ -612,7 +584,6 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
             continue;
         }
 
-        qDebug() << "    [Add to rename list]";
 
         rename_list.append(qMakePair(index, new_path));
         original_paths.append(file->originalPath());
@@ -642,13 +613,12 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
         // If there were pre-execution failures, need to sort and emit signal
         if (pre_failure_count > 0)
         {
-            qDebug() << "[executeRename] All files failed pre-execution checks, sorting by status...";
             std::sort(files_.begin(), files_.end(),
                       [](const FileItem *a, const FileItem *b)
                       {
                           // Priority: Failed(2) > RolledBack(3) > Pending(0) > Success(1)
                           int priority_a, priority_b;
-                          
+
                           switch (a->executionStatus())
                           {
                           case FileItem::ExecutionStatus::Failed:
@@ -667,7 +637,7 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
                               priority_a = 4;
                               break;
                           }
-                          
+
                           switch (b->executionStatus())
                           {
                           case FileItem::ExecutionStatus::Failed:
@@ -686,22 +656,22 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
                               priority_b = 4;
                               break;
                           }
-                          
+
                           return priority_a < priority_b;
                       });
-            
+
             emit filesSorted();
             emit renameExecuted(0, pre_failure_count);
         }
-        
+
         return BaseResponse::Error(tr("No files to process"), OperationErrorCode::kNoFiles);
     }
 
     // Execute renames (continue on failure, rollback all if any failed)
-    int                            success_count = 0;
-    int                            failure_count = 0;
-    QList<QPair<int, QString>>     successful_renames; // Store adjusted_index and old_path for rollback
-    QList<QPair<int, FileItem *>>  succeeded_files;    // Store adjusted_index and new FileItem for rollback
+    int                           success_count = 0;
+    int                           failure_count = 0;
+    QList<QPair<int, QString>>    successful_renames; // Store adjusted_index and old_path for rollback
+    QList<QPair<int, FileItem *>> succeeded_files;    // Store adjusted_index and new FileItem for rollback
 
     for (int i = 0; i < rename_list.size(); ++i)
     {
@@ -766,7 +736,7 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
             file->setErrorMessage(tr("Failed"));
             file->setExecutionStatus(FileItem::ExecutionStatus::Failed);
             emit fileUpdated(adjusted_index);
-            
+
             // Continue to next file (will rollback at the end if needed)
         }
     }
@@ -774,18 +744,16 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
     // If any file failed, rollback all successful renames
     if (failure_count > 0 && success_count > 0)
     {
-        qDebug() << "[Rollback] Detected failures, rolling back all successful renames...";
-        
+
         QDir dir;
         for (int i = 0; i < successful_renames.size(); ++i)
         {
-            int     adjusted_index = successful_renames[i].first;
-            QString old_path       = successful_renames[i].second;
-            FileItem *old_file     = succeeded_files[i].second;
-            FileItem *new_file     = files_[adjusted_index];
-            QString   new_path     = new_file->originalPath();
+            int       adjusted_index = successful_renames[i].first;
+            QString   old_path       = successful_renames[i].second;
+            FileItem *old_file       = succeeded_files[i].second;
+            FileItem *new_file       = files_[adjusted_index];
+            QString   new_path       = new_file->originalPath();
 
-            qDebug() << "  Rollback:" << new_path << "->" << old_path;
 
             // Rollback the rename
             if (dir.rename(new_path, old_path))
@@ -815,16 +783,14 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
             // (This handles the case where rollback failed)
         }
 
-        qDebug() << "[Rollback] Complete. All changes have been rolled back.";
-        
+
         // Sort files by execution status: Failed > RolledBack > Pending > Success
-        qDebug() << "[Rollback] Sorting files by status...";
         std::sort(files_.begin(), files_.end(),
                   [](const FileItem *a, const FileItem *b)
                   {
                       // Priority: Failed(2) > RolledBack(3) > Pending(0) > Success(1)
                       int priority_a, priority_b;
-                      
+
                       switch (a->executionStatus())
                       {
                       case FileItem::ExecutionStatus::Failed:
@@ -843,7 +809,7 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
                           priority_a = 4;
                           break;
                       }
-                      
+
                       switch (b->executionStatus())
                       {
                       case FileItem::ExecutionStatus::Failed:
@@ -862,17 +828,17 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
                           priority_b = 4;
                           break;
                       }
-                      
+
                       return priority_a < priority_b;
                   });
-        
+
         emit filesSorted(); // Notify UI to update
-        qDebug() << "[Rollback] Sort complete.";
-        
+
         emit renameExecuted(0, failure_count); // success_count = 0 after rollback
 
-        return BaseResponse::Error(tr("Operation failed: %1 file(s) failed, all changes have been rolled back").arg(failure_count),
-                                   FileErrorCode::kFileRenameFailed);
+        return BaseResponse::Error(
+            tr("Operation failed: %1 file(s) failed, all changes have been rolled back").arg(failure_count),
+            FileErrorCode::kFileRenameFailed);
     }
     else
     {
@@ -972,10 +938,10 @@ BaseResponse FileService::importFromJson(const QString &filePath)
                                    FileErrorCode::kFileOpenFailed);
     }
 
-    QByteArray      data = file.readAll();
+    QByteArray data = file.readAll();
     file.close();
 
-    QJsonDocument   doc    = QJsonDocument::fromJson(data);
+    QJsonDocument doc = QJsonDocument::fromJson(data);
     if (!doc.isObject())
     {
         return BaseResponse::Error(tr("Invalid JSON format"), FileErrorCode::kFileFormatError);
@@ -990,8 +956,8 @@ BaseResponse FileService::importFromJson(const QString &filePath)
     // Import files
     for (const QJsonValue &value : filesArray)
     {
-        QJsonObject fileObj        = value.toObject();
-        QString     originalPath   = fileObj["originalPath"].toString();
+        QJsonObject fileObj      = value.toObject();
+        QString     originalPath = fileObj["originalPath"].toString();
 
         // Check if file still exists
         if (!QFileInfo::exists(originalPath))
@@ -1004,8 +970,7 @@ BaseResponse FileService::importFromJson(const QString &filePath)
         item->setNewName(fileObj["newName"].toString());
         item->setHasError(fileObj["hasError"].toBool());
         item->setErrorMessage(fileObj["errorMessage"].toString());
-        item->setExecutionStatus(
-            static_cast<FileItem::ExecutionStatus>(fileObj["executionStatus"].toInt()));
+        item->setExecutionStatus(static_cast<FileItem::ExecutionStatus>(fileObj["executionStatus"].toInt()));
 
         files_.append(item);
     }
@@ -1115,7 +1080,4 @@ void FileService::sortFiles(SortType sortType)
 
     // Emit signal to notify UI update
     emit filesSorted();
-
-    qDebug() << "[FileService] Files sorted, type:"
-             << (sortType == SortType::ByName ? "By filename" : "By modified time");
 }

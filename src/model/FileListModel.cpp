@@ -1,6 +1,7 @@
 #include "FileListModel.h"
 #include "../service/FileService.h"
 #include "../util/FileSystemHelper.h"
+#include "../util/SimpleLog.h"
 #include <QFileInfo>
 #include <QElapsedTimer>
 #include <QDebug>
@@ -222,18 +223,18 @@ void FileListModel::selectRange(int startIndex, int endIndex)
 
     // If the range is on current page, notify UI update
     int page_start = getStartIndex();
-    int page_end = getEndIndex();
-    
+    int page_end   = getEndIndex();
+
     if (current_page_ == 1 && startIndex < page_end)
     {
         int display_start = qMax(0, startIndex - page_start);
-        int display_end = qMin(count(), endIndex - page_start);
+        int display_end   = qMin(count(), endIndex - page_start);
         if (display_start < display_end)
         {
             emit dataChanged(createIndex(display_start, 0), createIndex(display_end - 1, 0), {IsSelectedRole});
         }
     }
-    
+
     emit selectedCountChanged();
     emit selectionChanged();
 }
@@ -257,14 +258,11 @@ void FileListModel::onFilesAdded(int addedCount)
     QElapsedTimer timer;
     timer.start();
 
-    qDebug() << "[FileListModel::onFilesAdded] Start processing" << addedCount << "files";
-
     // Synchronous add, will only trigger once, just update directly
     updatePagination();
     emit totalCountChanged();
 
     qint64 beforeReset = timer.elapsed();
-    qDebug() << "  [Pagination update] Time:" << beforeReset << "ms";
 
     // Note: Auto-selection is now handled by MainController::addFiles/addFolder
     // after sorting is complete, to ensure correct indices
@@ -272,16 +270,13 @@ void FileListModel::onFilesAdded(int addedCount)
     // If on first page, refresh display
     if (current_page_ == 1)
     {
-        qDebug() << "  [UI refresh] Start beginResetModel/endResetModel...";
         qint64 resetStart = timer.nsecsElapsed();
         beginResetModel();
         endResetModel();
         qint64 resetEnd = timer.nsecsElapsed();
-        qDebug() << "  [UI refresh] Complete, time:" << (resetEnd - resetStart) / 1000000.0 << "ms";
     }
 
     qint64 total = timer.elapsed();
-    qDebug() << "[FileListModel::onFilesAdded] Complete, total time:" << total << "ms";
 }
 
 void FileListModel::onFilesRemoved(int count)
@@ -289,9 +284,9 @@ void FileListModel::onFilesRemoved(int count)
     // This slot is kept for backward compatibility
     // Actual selection adjustment is done in onFilesRemovedWithIndices
     // Only update UI if filesRemovedWithIndices was not triggered
-    
+
     qDebug() << "[FileListModel::onFilesRemoved] Removed" << count << "file(s) (fallback handler)";
-    
+
     // Note: We don't adjust selection here because we don't know which indices were removed
     // If only this signal is triggered (old code path), we clear selection as a safe fallback
     // But the new signal filesRemovedWithIndices should be triggered instead
@@ -299,28 +294,22 @@ void FileListModel::onFilesRemoved(int count)
 
 void FileListModel::onFilesRemovedWithIndices(const QList<int> &removedIndices)
 {
-    qDebug() << "[FileListModel::onFilesRemovedWithIndices] ========== START ==========";
-    qDebug() << "  Removed indices:" << removedIndices;
-    qDebug() << "  Before - Selected indices:" << selected_indices_;
-    qDebug() << "  Before - Total file count:" << file_service_->fileCount() + removedIndices.size();
-    
     // Adjust selection indices after removal
     // For each removed index, decrease all indices greater than it by 1
-    
+
     QSet<int> adjusted_selection;
-    
+
     for (int selectedIdx : selected_indices_)
     {
-        qDebug() << "  Processing selected index:" << selectedIdx;
-        
         // Check if this index was removed
         if (removedIndices.contains(selectedIdx))
         {
-            qDebug() << "    -> This index was removed, skipping";
+            SimpleLog::write("[FileListModel] onFilesRemovedWithIndices: Selected index " +
+                             QString::number(selectedIdx) + " was removed, skipping.");
             // This file was removed, don't keep it in selection
             continue;
         }
-        
+
         // Count how many removed indices are less than this selected index
         int offset = 0;
         for (int removedIdx : removedIndices)
@@ -328,28 +317,22 @@ void FileListModel::onFilesRemovedWithIndices(const QList<int> &removedIndices)
             if (removedIdx < selectedIdx)
             {
                 offset++;
-                qDebug() << "    -> Removed index" << removedIdx << "< selected index" << selectedIdx << ", offset now =" << offset;
             }
         }
-        
+
         // Adjust the index by subtracting the offset
         int new_index = selectedIdx - offset;
-        qDebug() << "    -> New index:" << new_index << "(offset was" << offset << ")";
         adjusted_selection.insert(new_index);
     }
-    
+
     selected_indices_ = adjusted_selection;
-    
-    qDebug() << "  After - Selected indices:" << selected_indices_;
-    qDebug() << "  After - Total file count:" << file_service_->fileCount();
-    qDebug() << "[FileListModel::onFilesRemovedWithIndices] ========== END ==========";
-    
+
     beginResetModel();
     endResetModel();
 
     updatePagination();
     emit selectedCountChanged();
-    emit selectionChanged();  // Notify selection state changed
+    emit selectionChanged(); // Notify selection state changed
     emit totalCountChanged();
 }
 
@@ -396,15 +379,13 @@ void FileListModel::onFileUpdated(int index)
 
 void FileListModel::onFilesSorted()
 {
-    qDebug() << "[FileListModel] Files sorted, preserving selection state";
-
     // Before sorting: save selected file pointers
-    QSet<FileItem*> selected_files;
+    QSet<FileItem *> selected_files;
     for (int index : selected_indices_)
     {
         if (index < file_service_->fileCount())
         {
-            FileItem* item = file_service_->getFile(index);
+            FileItem *item = file_service_->getFile(index);
             if (item)
             {
                 selected_files.insert(item);
@@ -418,14 +399,12 @@ void FileListModel::onFilesSorted()
     // After sorting: rebuild selection based on file pointers
     for (int i = 0; i < file_service_->fileCount(); ++i)
     {
-        FileItem* item = file_service_->getFile(i);
+        FileItem *item = file_service_->getFile(i);
         if (item && selected_files.contains(item))
         {
             selected_indices_.insert(i);
         }
     }
-
-    qDebug() << "  [Selection preserved]" << selected_indices_.size() << "files remain selected after sorting";
 
     // Reset model to refresh entire list
     beginResetModel();

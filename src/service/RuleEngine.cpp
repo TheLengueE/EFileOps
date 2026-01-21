@@ -29,6 +29,7 @@ BaseResponse RuleEngine::addRule(RuleBase *rule)
     rules_.append(rule);
 
     emit ruleCountChanged();
+    // history
     emit ruleAdded(rules_.size() - 1);
 
     return BaseResponse::SuccessWithData(QVariantMap{{"index", rules_.size() - 1}}, tr("Rule added successfully"));
@@ -248,14 +249,14 @@ BaseResponse RuleEngine::saveToFile(const QString &filePath) const
     }
 
     // Convert rules to JSON
-    QJsonArray json_array = toJson();
+    QJsonArray    json_array = toJson();
     QJsonDocument doc(json_array);
 
     // Write to file
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        return BaseResponse::Error(tr("Failed to open file for writing: %1").arg(file.errorString()), 
+        return BaseResponse::Error(tr("Failed to open file for writing: %1").arg(file.errorString()),
                                    ProjectErrorCode::kProjectSaveFailed);
     }
 
@@ -288,7 +289,7 @@ BaseResponse RuleEngine::loadFromFile(const QString &filePath)
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        return BaseResponse::Error(tr("Failed to open file for reading: %1").arg(file.errorString()), 
+        return BaseResponse::Error(tr("Failed to open file for reading: %1").arg(file.errorString()),
                                    ProjectErrorCode::kProjectLoadFailed);
     }
 
@@ -297,28 +298,28 @@ BaseResponse RuleEngine::loadFromFile(const QString &filePath)
 
     // Parse JSON
     QJsonParseError parse_error;
-    QJsonDocument doc = QJsonDocument::fromJson(file_data, &parse_error);
+    QJsonDocument   doc = QJsonDocument::fromJson(file_data, &parse_error);
 
     if (parse_error.error != QJsonParseError::NoError)
     {
-        return BaseResponse::Error(tr("Failed to parse JSON: %1").arg(parse_error.errorString()), 
+        return BaseResponse::Error(tr("Failed to parse JSON: %1").arg(parse_error.errorString()),
                                    ProjectErrorCode::kProjectInvalidFormat);
     }
 
     if (!doc.isArray())
     {
-        return BaseResponse::Error(tr("Invalid configuration format: expected JSON array"), 
+        return BaseResponse::Error(tr("Invalid configuration format: expected JSON array"),
                                    ProjectErrorCode::kProjectInvalidFormat);
     }
 
     // Load rules from JSON
     BaseResponse response = fromJson(doc.array());
-    
+
     if (response.success)
     {
         qDebug() << "[RuleEngine] Loaded" << rules_.size() << "rules from" << filePath;
     }
-    
+
     return response;
 }
 
@@ -361,7 +362,7 @@ BaseResponse RuleEngine::fromJson(const QJsonArray &json_array)
         }
 
         QJsonObject json_obj = value.toObject();
-        
+
         // Get rule type
         if (!json_obj.contains("type"))
         {
@@ -371,7 +372,7 @@ BaseResponse RuleEngine::fromJson(const QJsonArray &json_array)
         }
 
         QString rule_type = json_obj["type"].toString();
-        
+
         // Create rule instance using factory
         RuleBase *rule = createRule(rule_type);
         if (!rule)
@@ -402,7 +403,7 @@ BaseResponse RuleEngine::fromJson(const QJsonArray &json_array)
     // Emit signal to update UI
     emit ruleCountChanged();
     emit rulesCleared(); // Signal to clear UI
-    
+
     // Notify each rule was added (for UI refresh)
     for (int i = 0; i < rules_.size(); ++i)
     {

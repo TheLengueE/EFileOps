@@ -3,6 +3,7 @@
 #include "../util/FileSystemHelper.h"
 #include "../model/FileListModel.h"
 #include "../core/AppSettings.h"
+#include "../util/SimpleLog.h"
 #include <QDesktopServices>
 #include <QUrl>
 #include <QFileInfo>
@@ -68,13 +69,11 @@ BaseResponse MainController::addFiles(const QStringList &filePaths)
         if (added_count > 0)
         {
             file_list_model_->selectRange(old_count, new_count);
-            qDebug() << "[MainController] Auto-selected newly added files, range:" << old_count << "to" << new_count;
 
             // Apply default sort mode after selection
             int default_sort_mode = AppSettings::instance()->defaultSortMode();
             file_service_->sortFiles((default_sort_mode == 1) ? FileService::SortType::ByModifiedTime
                                                               : FileService::SortType::ByName);
-            qDebug() << "[MainController] Applied default sort mode:" << default_sort_mode;
         }
     }
 
@@ -100,13 +99,11 @@ BaseResponse MainController::addFolder(const QString &folderPath, bool recursive
         if (added_count > 0)
         {
             file_list_model_->selectRange(old_count, new_count);
-            qDebug() << "[MainController] Auto-selected newly added files, range:" << old_count << "to" << new_count;
 
             // Apply default sort mode after selection
             int default_sort_mode = AppSettings::instance()->defaultSortMode();
             file_service_->sortFiles((default_sort_mode == 1) ? FileService::SortType::ByModifiedTime
                                                               : FileService::SortType::ByName);
-            qDebug() << "[MainController] Applied default sort mode:" << default_sort_mode;
         }
     }
 
@@ -164,7 +161,7 @@ BaseResponse MainController::openFileLocation(int index)
         return BaseResponse::Error(tr("File not found at index: %1").arg(index), FileErrorCode::kFileNotExist);
     }
 
-    QString file_path = item->originalPath();
+    QString   file_path = item->originalPath();
     QFileInfo file_info(file_path);
 
     // Check if file exists
@@ -175,16 +172,16 @@ BaseResponse MainController::openFileLocation(int index)
 
     // Get directory path
     QString dir_path = file_info.absolutePath();
-    bool success = false;
+    bool    success  = false;
 
 #ifdef Q_OS_WIN
     // On Windows, use explorer.exe with /select parameter to select the file
-    QString native_path = QDir::toNativeSeparators(file_info.absoluteFilePath());
+    QString  native_path = QDir::toNativeSeparators(file_info.absoluteFilePath());
     QProcess process;
     process.setProgram("explorer.exe");
     process.setArguments({"/select,", native_path});
     success = process.startDetached();
-    
+
     if (!success)
     {
         // Fallback: Just open the folder
@@ -196,7 +193,7 @@ BaseResponse MainController::openFileLocation(int index)
     process.setProgram("open");
     process.setArguments({"-R", file_path});
     success = process.startDetached();
-    
+
     if (!success)
     {
         // Fallback: Just open the folder
@@ -355,23 +352,15 @@ BaseResponse MainController::preview()
 
 BaseResponse MainController::execute()
 {
-    qDebug() << "[MainController::execute] Start executing rename";
-    qDebug() << "  Selected files count:" << selected_indices_.size();
-    qDebug() << "  Rules count:" << rule_engine_->ruleCount();
-
     // Validate if any files are selected
     if (selected_indices_.isEmpty())
     {
-        qDebug() << "  [Error] No files selected";
         return BaseResponse::Error(tr("Please select files to process first"), OperationErrorCode::kNoFiles);
     }
 
     setBusy(true);
     auto response = file_service_->executeRename(selected_indices_);
     setBusy(false);
-
-    qDebug() << "  Execution result:" << (response.success ? "Success" : "Failed");
-    qDebug() << "  Return message:" << response.message;
 
     setStatusMessage(response.message);
     emit operationCompleted(response);
@@ -538,11 +527,9 @@ BaseResponse MainController::loadSession()
 
     if (!QFileInfo::exists(sessionPath))
     {
-        qDebug() << "[MainController] No session file found, starting fresh";
         return BaseResponse::Success(tr("No previous session found"));
     }
 
-    qDebug() << "[MainController] Loading session from:" << sessionPath;
     return loadProject(sessionPath);
 }
 
@@ -550,26 +537,20 @@ void MainController::autoSaveSession()
 {
     if (!AppSettings::instance()->autoRestoreSession())
     {
-        qDebug() << "[MainController] Auto restore disabled, skipping session save";
         return;
     }
 
     // Only save if there are files or rules
     if (file_service_->fileCount() == 0 && rule_engine_->ruleCount() == 0)
     {
-        qDebug() << "[MainController] No content to save";
         return;
     }
 
-    qDebug() << "[MainController] Auto-saving session...";
     auto response = saveSession();
-    if (response.success)
+
+    if (!response.success)
     {
-        qDebug() << "[MainController] Session saved successfully";
-    }
-    else
-    {
-        qWarning() << "[MainController] Failed to save session:" << response.message;
+        SimpleLog::write("[MainController] Failed to auto-save session: " + response.message);
     }
 }
 
@@ -741,7 +722,6 @@ void MainController::updatePreview()
 void MainController::setSelectedIndices(const QList<int> &indices)
 {
     selected_indices_ = indices;
-    qDebug() << "[MainController] Set selected indices, count:" << indices.size();
     // Auto update preview when selection state changes
     if (rule_engine_->ruleCount() > 0)
     {
@@ -780,8 +760,7 @@ void MainController::onFileListSelectionChanged()
     if (file_list_model_)
     {
         selected_indices_ = file_list_model_->getSelectedIndices();
-        qDebug() << "[MainController] Synced selection from FileListModel, count:" << selected_indices_.size();
-        
+
         // Auto update preview when selection state changes
         if (rule_engine_->ruleCount() > 0)
         {
@@ -789,4 +768,3 @@ void MainController::onFileListSelectionChanged()
         }
     }
 }
-
