@@ -600,7 +600,19 @@
         </message>
         <message>
             <source>Batch File Rename Tool</source>
-            <translation>批量文件重命名工具</translation>
+            <translation>安全批量文件重命名工具</translation>
+        </message>
+        <message>
+            <source>Safe Batch File Renamer</source>
+            <translation>安全批量文件重命名工具</translation>
+        </message>
+        <message>
+            <source>A Windows file batch renaming tool that focuses on safety and simplicity.</source>
+            <translation>一个注重安全性和简洁的文件批量重命名工具。</translation>
+        </message>
+        <message>
+            <source>A safe and simple batch file renaming tool with preview and rollback.</source>
+            <translation>一个注重安全性和简洁的文件批量重命名工具，支持预览与回滚。</translation>
         </message>
         <message>
             <source>Close</source>
@@ -733,6 +745,18 @@
         <message>
             <source>Execute</source>
             <translation>执行</translation>
+        </message>
+        <message>
+            <source>Please add at least one file first</source>
+            <translation>请先添加至少一个文件</translation>
+        </message>
+        <message>
+            <source>Please select at least one file</source>
+            <translation>请先勾选至少一个文件</translation>
+        </message>
+        <message>
+            <source>Please add at least one rule first</source>
+            <translation>请先添加至少一条规则</translation>
         </message>
         <message>
             <source>File Count Limit Warning</source>
@@ -1316,6 +1340,18 @@
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
             <translation>您已选择 %1 个文件，超过最大限制。</translation>
         </message>
+        <message>
+            <source>Date/Time %1 (%2): &quot;%3&quot;</source>
+            <translation>日期/时间 %1（%2）：&quot;%3&quot;</translation>
+        </message>
+        <message>
+            <source>Modified</source>
+            <translation>修改时间</translation>
+        </message>
+        <message>
+            <source>Created</source>
+            <translation>创建时间</translation>
+        </message>
     </context>
     <context>
         <name>RuleConfigDialog</name>
@@ -1391,6 +1427,14 @@
         <message>
             <source>Add sequential numbers to files</source>
             <translation>为文件添加编号，序列号</translation>
+        </message>
+        <message>
+            <source>Date/Time</source>
+            <translation>日期/时间</translation>
+        </message>
+        <message>
+            <source>Add date or time stamp from file metadata</source>
+            <translation>使用文件元数据中的日期或时间添加时间戳</translation>
         </message>
         <message>
             <source>Change case and format of file names</source>
@@ -1548,6 +1592,120 @@
         <message>
             <source>Add Rule</source>
             <translation>添加规则</translation>
+        </message>
+    </context>
+    <context>
+        <name>DateTimeRule</name>
+        <message>
+            <source>Add Date/Time</source>
+            <translation>添加日期/时间</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>前缀</translation>
+        </message>
+        <message>
+            <source>Suffix</source>
+            <translation>后缀</translation>
+        </message>
+        <message>
+            <source>Modified</source>
+            <translation>修改时间</translation>
+        </message>
+        <message>
+            <source>Created</source>
+            <translation>创建时间</translation>
+        </message>
+        <message>
+            <source>Add %1 Date/Time (%2): &quot;%3&quot;</source>
+            <translation>添加 %1 日期/时间（%2）：&quot;%3&quot;</translation>
+        </message>
+        <message>
+            <source>Format cannot be empty</source>
+            <translation>格式不能为空</translation>
+        </message>
+    </context>
+    <context>
+        <name>DateTimeRuleConfig</name>
+        <message>
+            <source>Date/Time Stamp Rule</source>
+            <translation>日期/时间戳规则</translation>
+        </message>
+        <message>
+            <source>Position</source>
+            <translation>位置</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>前缀</translation>
+        </message>
+        <message>
+            <source>Suffix</source>
+            <translation>后缀</translation>
+        </message>
+        <message>
+            <source>Date Format</source>
+            <translation>日期格式</translation>
+        </message>
+        <message>
+            <source>ISO (YYYY-MM-DD)</source>
+            <translation>ISO（YYYY-MM-DD）</translation>
+        </message>
+        <message>
+            <source>Compact (YYYYMMDD)</source>
+            <translation>紧凑型（YYYYMMDD）</translation>
+        </message>
+        <message>
+            <source>US (MM-DD-YYYY)</source>
+            <translation>美式（MM-DD-YYYY）</translation>
+        </message>
+        <message>
+            <source>EU (DD.MM.YYYY)</source>
+            <translation>欧式（DD.MM.YYYY）</translation>
+        </message>
+        <message>
+            <source>Date+Time (YYYY-MM-DD_HH-mm)</source>
+            <translation>日期+时间（YYYY-MM-DD_HH-mm）</translation>
+        </message>
+        <message>
+            <source>Custom</source>
+            <translation>自定义</translation>
+        </message>
+        <message>
+            <source>Custom Format</source>
+            <translation>自定义格式</translation>
+        </message>
+        <message>
+            <source>Tokens: YYYY MM DD HH mm SS  or  {YYYY} {MM} {DD} {HH} {mm} {SS}</source>
+            <translation>可用标记：YYYY MM DD HH mm SS  或  {YYYY} {MM} {DD} {HH} {mm} {SS}</translation>
+        </message>
+        <message>
+            <source>Time Source</source>
+            <translation>时间来源</translation>
+        </message>
+        <message>
+            <source>Modified Time</source>
+            <translation>修改时间</translation>
+        </message>
+        <message>
+            <source>Created Time</source>
+            <translation>创建时间</translation>
+        </message>
+        <message>
+            <source>Separator</source>
+            <translation>分隔符</translation>
+        </message>
+        <message>
+            <source>Space</source>
+            <translation>空格</translation>
+        </message>
+        <message>
+            <source>Preview</source>
+            <translation>预览</translation>
+        </message>
+        <message>
+            <source>Date/Time</source>
+            <translation>日期/时间</translation>
         </message>
     </context>
 </TS>

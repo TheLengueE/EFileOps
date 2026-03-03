@@ -85,6 +85,17 @@ Popup {
                 }
             }
             
+            // Date/Time stamp rule
+            RuleTypeCard {
+                width: parent.width
+                title: I18n.tr("RuleTypeSelector", "Date/Time")
+                description: I18n.tr("RuleTypeSelector", "Add date or time stamp from file metadata")
+                onClicked: {
+                    root.ruleTypeSelected("dateTime")
+                    root.close()
+                }
+            }
+
             // Remove rule
             RuleTypeCard {
                 width: parent.width

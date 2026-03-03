@@ -282,38 +282,68 @@ Rectangle {
                 }
             }
 
-            // ========== Bottom Execution Area ==========
-            Rectangle {
-                width: parent.width
-                height: 60
-                color: EUITheme.colorMutedBg
-                
+                // ========== Bottom Execution Area ==========
                 Rectangle {
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: 1
-                    color: EUITheme.colorDivider
-                }
+                    width: parent.width
+                    height: 60
+                    color: EUITheme.colorMutedBg
+                    
+                    Rectangle {
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        height: 1
+                        color: EUITheme.colorDivider
+                    }
 
-                EButton {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: EUITheme.spacingL
-                    
-                    buttonType: EButton.ButtonType.Primary
-                    text: I18n.tr("CenterPanel", "Execute")
-                    
-                    implicitWidth: 120
-                    enabled: fileListModel.totalCount > 0 && 
-                             fileListModel.selectedCount > 0 && 
-                             mainController.ruleEngine.ruleCount > 0
-                    
-                    onClicked: {
-                        mainController.execute();
+                    // Wrapper to enable ToolTip even when button is disabled
+                    Item {
+                        id: executeButtonWrapper
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.rightMargin: EUITheme.spacingL
+                        width: executeButton.implicitWidth
+                        height: executeButton.implicitHeight
+
+                        EButton {
+                            id: executeButton
+                            anchors.fill: parent
+
+                            buttonType: EButton.ButtonType.Primary
+                            text: I18n.tr("CenterPanel", "Execute")
+
+                            implicitWidth: 120
+                            enabled: fileListModel.totalCount > 0 &&
+                                     fileListModel.selectedCount > 0 &&
+                                     mainController.ruleEngine.ruleCount > 0
+
+                            onClicked: {
+                                mainController.execute();
+                            }
+                        }
+
+                        // Hover layer: captures mouse when button is disabled to show ToolTip
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            acceptedButtons: Qt.NoButton
+                            visible: !executeButton.enabled
+
+                            ToolTip.visible: containsMouse
+                            ToolTip.delay: 400
+                            ToolTip.text: {
+                                var v = I18n.version
+                                if (fileListModel.totalCount === 0)
+                                    return I18n.tr("CenterPanel", "Please add at least one file first")
+                                if (fileListModel.selectedCount === 0)
+                                    return I18n.tr("CenterPanel", "Please select at least one file")
+                                if (mainController.ruleEngine.ruleCount === 0)
+                                    return I18n.tr("CenterPanel", "Please add at least one rule first")
+                                return ""
+                            }
+                        }
                     }
                 }
-            }
         }
     }
     

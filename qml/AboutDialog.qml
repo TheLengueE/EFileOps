@@ -60,7 +60,7 @@ Popup {
             
             // Subtitle
             Text {
-                text: I18n.tr("AboutDialog", "Batch File Rename Tool")
+                text: I18n.tr("AboutDialog", "Safe Batch File Renamer")
                 font.pixelSize: EUITheme.fontBody
                 color: EUITheme.colorTextSubtle
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -71,7 +71,7 @@ Popup {
             // Description
             Text {
                 width: parent.width
-                text: I18n.tr("AboutDialog", "A Windows file batch renaming tool that focuses on safety and simplicity.")
+                text: I18n.tr("AboutDialog", "A safe and simple batch file renaming tool with preview and rollback.")
                 font.pixelSize: EUITheme.fontSmall
                 color: EUITheme.colorTextSubtle
                 wrapMode: Text.WordWrap
@@ -182,7 +182,7 @@ Popup {
                 }
                 
                 Text {
-                    text: "1.0.0"
+                    text: "1.0.3"
                     font.pixelSize: EUITheme.fontBody
                     color: EUITheme.colorText
                     font.weight: EUITheme.fontWeightMedium

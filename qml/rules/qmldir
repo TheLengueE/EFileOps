@@ -7,3 +7,4 @@ RemoveRuleConfig 1.0 RemoveRuleConfig.qml
 FormatRuleConfig 1.0 FormatRuleConfig.qml
 AddRuleConfig 1.0 AddRuleConfig.qml
 NumberingRuleConfig 1.0 NumberingRuleConfig.qml
+DateTimeRuleConfig 1.0 DateTimeRuleConfig.qml

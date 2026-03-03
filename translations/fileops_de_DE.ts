@@ -600,7 +600,11 @@
         </message>
         <message>
             <source>Batch File Rename Tool</source>
-            <translation>Stapel-Datei-Umbenennungstool</translation>
+            <translation>Sicheres Stapel-Datei-Umbenennungstool</translation>
+        </message>
+        <message>
+            <source>Safe Batch File Renamer</source>
+            <translation>Sicheres Stapel-Datei-Umbenennungstool</translation>
         </message>
         <message>
             <source>Close</source>
@@ -612,7 +616,11 @@
         </message>
         <message>
             <source>A Windows file batch renaming tool that focuses on safety and simplicity.</source>
-            <translation>Ein Windows-Tool zur Stapelumbenennung von Dateien mit Fokus auf Sicherheit und Einfachheit.</translation>
+            <translation>Ein sicheres und einfaches Tool zur Stapelumbenennung von Dateien mit Vorschau und Rollback.</translation>
+        </message>
+        <message>
+            <source>A safe and simple batch file renaming tool with preview and rollback.</source>
+            <translation>Ein sicheres und einfaches Tool zur Stapelumbenennung von Dateien mit Vorschau und Rollback.</translation>
         </message>
         <message>
             <source>Design Principles:</source>
@@ -733,6 +741,18 @@
         <message>
             <source>Execute</source>
             <translation>Ausführen</translation>
+        </message>
+        <message>
+            <source>Please add at least one file first</source>
+            <translation>Bitte zuerst mindestens eine Datei hinzufügen</translation>
+        </message>
+        <message>
+            <source>Please select at least one file</source>
+            <translation>Bitte mindestens eine Datei auswählen</translation>
+        </message>
+        <message>
+            <source>Please add at least one rule first</source>
+            <translation>Bitte zuerst mindestens eine Regel hinzufügen</translation>
         </message>
         <message>
             <source>File Count Limit Warning</source>
@@ -1321,6 +1341,18 @@ Regeln werden von oben nach unten ausgeführt</translation>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
             <translation>Sie haben %1 Dateien ausgewählt, was die maximale Grenze überschreitet.</translation>
         </message>
+        <message>
+            <source>Date/Time %1 (%2): &quot;%3&quot;</source>
+            <translation>Datum/Uhrzeit %1 (%2): &quot;%3&quot;</translation>
+        </message>
+        <message>
+            <source>Modified</source>
+            <translation>Änderungszeit</translation>
+        </message>
+        <message>
+            <source>Created</source>
+            <translation>Erstellungszeit</translation>
+        </message>
     </context>
     <context>
         <name>RuleConfigDialog</name>
@@ -1396,6 +1428,14 @@ Regeln werden von oben nach unten ausgeführt</translation>
         <message>
             <source>Add sequential numbers to files</source>
             <translation>Fortlaufende Nummern zu Dateien hinzufügen</translation>
+        </message>
+        <message>
+            <source>Date/Time</source>
+            <translation>Datum/Uhrzeit</translation>
+        </message>
+        <message>
+            <source>Add date or time stamp from file metadata</source>
+            <translation>Datums- oder Zeitstempel aus Datei-Metadaten hinzufügen</translation>
         </message>
         <message>
             <source>Change case and format of file names</source>
@@ -1555,4 +1595,119 @@ Regeln werden von oben nach unten ausgeführt</translation>
             <translation>Regel hinzufügen</translation>
         </message>
     </context>
+    <context>
+        <name>DateTimeRule</name>
+        <message>
+            <source>Add Date/Time</source>
+            <translation>Datum/Uhrzeit hinzufügen</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>Präfix</translation>
+        </message>
+        <message>
+            <source>Suffix</source>
+            <translation>Suffix</translation>
+        </message>
+        <message>
+            <source>Modified</source>
+            <translation>Änderungszeit</translation>
+        </message>
+        <message>
+            <source>Created</source>
+            <translation>Erstellungszeit</translation>
+        </message>
+        <message>
+            <source>Add %1 Date/Time (%2): &quot;%3&quot;</source>
+            <translation>%1 Datum/Uhrzeit hinzufügen (%2): &quot;%3&quot;</translation>
+        </message>
+        <message>
+            <source>Format cannot be empty</source>
+            <translation>Format darf nicht leer sein</translation>
+        </message>
+    </context>
+    <context>
+        <name>DateTimeRuleConfig</name>
+        <message>
+            <source>Date/Time Stamp Rule</source>
+            <translation>Datum/Uhrzeit-Stempel-Regel</translation>
+        </message>
+        <message>
+            <source>Position</source>
+            <translation>Position</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>Präfix</translation>
+        </message>
+        <message>
+            <source>Suffix</source>
+            <translation>Suffix</translation>
+        </message>
+        <message>
+            <source>Date Format</source>
+            <translation>Datumsformat</translation>
+        </message>
+        <message>
+            <source>ISO (YYYY-MM-DD)</source>
+            <translation>ISO (YYYY-MM-DD)</translation>
+        </message>
+        <message>
+            <source>Compact (YYYYMMDD)</source>
+            <translation>Kompakt (JJJJMMTT)</translation>
+        </message>
+        <message>
+            <source>US (MM-DD-YYYY)</source>
+            <translation>US (MM-TT-JJJJ)</translation>
+        </message>
+        <message>
+            <source>EU (DD.MM.YYYY)</source>
+            <translation>EU (TT.MM.JJJJ)</translation>
+        </message>
+        <message>
+            <source>Date+Time (YYYY-MM-DD_HH-mm)</source>
+            <translation>Datum+Zeit (JJJJ-MM-TT_HH-mm)</translation>
+        </message>
+        <message>
+            <source>Custom</source>
+            <translation>Benutzerdefiniert</translation>
+        </message>
+        <message>
+            <source>Custom Format</source>
+            <translation>Benutzerdefiniertes Format</translation>
+        </message>
+        <message>
+            <source>Tokens: YYYY MM DD HH mm SS  or  {YYYY} {MM} {DD} {HH} {mm} {SS}</source>
+            <translation>Platzhalter: YYYY MM DD HH mm SS  oder  {YYYY} {MM} {DD} {HH} {mm} {SS}</translation>
+        </message>
+        <message>
+            <source>Time Source</source>
+            <translation>Zeitquelle</translation>
+        </message>
+        <message>
+            <source>Modified Time</source>
+            <translation>Änderungszeit</translation>
+        </message>
+        <message>
+            <source>Created Time</source>
+            <translation>Erstellungszeit</translation>
+        </message>
+        <message>
+            <source>Separator</source>
+            <translation>Trennzeichen</translation>
+        </message>
+        <message>
+            <source>Space</source>
+            <translation>Leerzeichen</translation>
+        </message>
+        <message>
+            <source>Preview</source>
+            <translation>Vorschau</translation>
+        </message>
+        <message>
+            <source>Date/Time</source>
+            <translation>Datum/Uhrzeit</translation>
+        </message>
+    </context>
 </TS>
+

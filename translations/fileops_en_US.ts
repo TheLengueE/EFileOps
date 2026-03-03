@@ -600,7 +600,11 @@
         </message>
         <message>
             <source>Batch File Rename Tool</source>
-            <translation>Batch File Rename Tool</translation>
+            <translation>Safe Batch File Renamer</translation>
+        </message>
+        <message>
+            <source>Safe Batch File Renamer</source>
+            <translation>Safe Batch File Renamer</translation>
         </message>
         <message>
             <source>Close</source>
@@ -612,7 +616,11 @@
         </message>
         <message>
             <source>A Windows file batch renaming tool that focuses on safety and simplicity.</source>
-            <translation>A Windows file batch renaming tool that focuses on safety and simplicity.</translation>
+            <translation>A safe and simple batch file renaming tool with preview and rollback.</translation>
+        </message>
+        <message>
+            <source>A safe and simple batch file renaming tool with preview and rollback.</source>
+            <translation>A safe and simple batch file renaming tool with preview and rollback.</translation>
         </message>
         <message>
             <source>Design Principles:</source>
@@ -733,6 +741,18 @@
         <message>
             <source>Execute</source>
             <translation>Execute</translation>
+        </message>
+        <message>
+            <source>Please add at least one file first</source>
+            <translation>Please add at least one file first</translation>
+        </message>
+        <message>
+            <source>Please select at least one file</source>
+            <translation>Please select at least one file</translation>
+        </message>
+        <message>
+            <source>Please add at least one rule first</source>
+            <translation>Please add at least one rule first</translation>
         </message>
         <message>
             <source>File Count Limit Warning</source>
@@ -1321,6 +1341,18 @@ Rules execute from top to bottom</translation>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
             <translation>You have selected %1 files, which exceeds the maximum limit.</translation>
         </message>
+        <message>
+            <source>Date/Time %1 (%2): &quot;%3&quot;</source>
+            <translation>Date/Time %1 (%2): &quot;%3&quot;</translation>
+        </message>
+        <message>
+            <source>Modified</source>
+            <translation>Modified</translation>
+        </message>
+        <message>
+            <source>Created</source>
+            <translation>Created</translation>
+        </message>
     </context>
     <context>
         <name>RuleConfigDialog</name>
@@ -1398,6 +1430,14 @@ Rules execute from top to bottom</translation>
             <translation>Add numbers and serial numbers to files</translation>
         </message>
         <message>
+            <source>Date/Time</source>
+            <translation>Date/Time</translation>
+        </message>
+        <message>
+            <source>Add date or time stamp from file metadata</source>
+            <translation>Add date or time stamp from file metadata</translation>
+        </message>
+        <message>
             <source>Change case and format of file names</source>
             <translation>Standardize file format style, such as case formatting</translation>
         </message>
@@ -1440,7 +1480,7 @@ Rules execute from top to bottom</translation>
         <!-- === Main Window === -->
         <message>
             <source>EFileOps</source>
-            <translation>EFileOps - Efficient File Operations Tool</translation>
+            <translation>EFileOps - Safe Batch File Renamer</translation>
         </message>
         <message>
             <source>Execution Failed</source>
@@ -1553,6 +1593,120 @@ Rules execute from top to bottom</translation>
         <message>
             <source>Add Rule</source>
             <translation>Add Rule</translation>
+        </message>
+    </context>
+    <context>
+        <name>DateTimeRule</name>
+        <message>
+            <source>Add Date/Time</source>
+            <translation>Add Date/Time</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>Prefix</translation>
+        </message>
+        <message>
+            <source>Suffix</source>
+            <translation>Suffix</translation>
+        </message>
+        <message>
+            <source>Modified</source>
+            <translation>Modified</translation>
+        </message>
+        <message>
+            <source>Created</source>
+            <translation>Created</translation>
+        </message>
+        <message>
+            <source>Add %1 Date/Time (%2): &quot;%3&quot;</source>
+            <translation>Add %1 Date/Time (%2): &quot;%3&quot;</translation>
+        </message>
+        <message>
+            <source>Format cannot be empty</source>
+            <translation>Format cannot be empty</translation>
+        </message>
+    </context>
+    <context>
+        <name>DateTimeRuleConfig</name>
+        <message>
+            <source>Date/Time Stamp Rule</source>
+            <translation>Date/Time Stamp Rule</translation>
+        </message>
+        <message>
+            <source>Position</source>
+            <translation>Position</translation>
+        </message>
+        <message>
+            <source>Prefix</source>
+            <translation>Prefix</translation>
+        </message>
+        <message>
+            <source>Suffix</source>
+            <translation>Suffix</translation>
+        </message>
+        <message>
+            <source>Date Format</source>
+            <translation>Date Format</translation>
+        </message>
+        <message>
+            <source>ISO (YYYY-MM-DD)</source>
+            <translation>ISO (YYYY-MM-DD)</translation>
+        </message>
+        <message>
+            <source>Compact (YYYYMMDD)</source>
+            <translation>Compact (YYYYMMDD)</translation>
+        </message>
+        <message>
+            <source>US (MM-DD-YYYY)</source>
+            <translation>US (MM-DD-YYYY)</translation>
+        </message>
+        <message>
+            <source>EU (DD.MM.YYYY)</source>
+            <translation>EU (DD.MM.YYYY)</translation>
+        </message>
+        <message>
+            <source>Date+Time (YYYY-MM-DD_HH-mm)</source>
+            <translation>Date+Time (YYYY-MM-DD_HH-mm)</translation>
+        </message>
+        <message>
+            <source>Custom</source>
+            <translation>Custom</translation>
+        </message>
+        <message>
+            <source>Custom Format</source>
+            <translation>Custom Format</translation>
+        </message>
+        <message>
+            <source>Tokens: YYYY MM DD HH mm SS  or  {YYYY} {MM} {DD} {HH} {mm} {SS}</source>
+            <translation>Tokens: YYYY MM DD HH mm SS  or  {YYYY} {MM} {DD} {HH} {mm} {SS}</translation>
+        </message>
+        <message>
+            <source>Time Source</source>
+            <translation>Time Source</translation>
+        </message>
+        <message>
+            <source>Modified Time</source>
+            <translation>Modified Time</translation>
+        </message>
+        <message>
+            <source>Created Time</source>
+            <translation>Created Time</translation>
+        </message>
+        <message>
+            <source>Separator</source>
+            <translation>Separator</translation>
+        </message>
+        <message>
+            <source>Space</source>
+            <translation>Space</translation>
+        </message>
+        <message>
+            <source>Preview</source>
+            <translation>Preview</translation>
+        </message>
+        <message>
+            <source>Date/Time</source>
+            <translation>Date/Time</translation>
         </message>
     </context>
 </TS>

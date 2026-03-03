@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("EFileOps");
     app.setOrganizationDomain("efileops.org");
     app.setApplicationName("EFileOps");
-    app.setApplicationVersion("1.0.0");
+    app.setApplicationVersion("1.0.3");
 
     // Set Qt UI style
     QQuickStyle::setStyle("Basic");

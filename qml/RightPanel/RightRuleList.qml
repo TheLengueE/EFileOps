@@ -9,7 +9,7 @@ Rectangle {
     color: EUITheme.colorCard
 
     signal ruleDeleted(int index)
-    signal ruleDoubleClicked(int index)
+    signal ruleClicked(int index, var config)
     signal ruleMoveUp(int index)
     signal ruleMoveDown(int index)
 
@@ -205,7 +205,7 @@ Rectangle {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 z: -1
-                onDoubleClicked: root.ruleDoubleClicked(index)
+                onClicked: root.ruleClicked(index, model.config)
             }
         }
     }
@@ -245,6 +245,8 @@ Rectangle {
                 return I18n.tr("RuleTypeSelector", "Add")
             case "numbering":
                 return I18n.tr("RuleTypeSelector", "Numbering")
+            case "DateTime":
+                return I18n.tr("RuleTypeSelector", "Date/Time")
             default:
                 return I18n.tr("RightPanel", "Unnamed Rule")
         }

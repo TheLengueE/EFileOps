@@ -8,6 +8,7 @@
 #include "../rule/rules/AddSuffixRule.h"
 #include "../rule/rules/CaseTransformRule.h"
 #include "../rule/rules/NumberingRule.h"
+#include "../rule/rules/DateTimeRule.h"
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -72,8 +73,38 @@ BaseResponse RuleEngine::moveRule(int fromIndex, int toIndex)
 
 BaseResponse RuleEngine::updateRule(int index, const QVariantMap &config)
 {
-    // TODO: Implement rule update
-    return BaseResponse::Error(tr("Feature not implemented yet"), ErrorCode::NOT_IMPLEMENTED);
+    if (index < 0 || index >= rules_.size())
+    {
+        return BaseResponse::Error(tr("Rule index out of bounds: %1").arg(index), RuleErrorCode::kRuleIndexOutOfRange);
+    }
+
+    // Get rule type from config, fallback to existing rule's type
+    QString ruleType = config.value("ruleType", rules_[index]->ruleType()).toString();
+
+    // Create new rule from factory
+    RuleBase *newRule = createRule(ruleType);
+    if (!newRule)
+    {
+        return BaseResponse::Error(tr("Unknown rule type: %1").arg(ruleType), ErrorCode::INVALID_PARAM);
+    }
+
+    newRule->applyConfig(config);
+
+    QString errorMsg;
+    if (!newRule->validate(&errorMsg))
+    {
+        delete newRule;
+        return BaseResponse::Error(tr("Rule validation failed: %1").arg(errorMsg), RuleErrorCode::kRuleValidationFailed);
+    }
+
+    // Replace old rule with new one at same index
+    newRule->setParent(this);
+    delete rules_[index];
+    rules_[index] = newRule;
+
+    emit ruleUpdated(index);
+
+    return BaseResponse::Success(tr("Rule updated successfully"));
 }
 
 BaseResponse RuleEngine::clearRules()
@@ -452,6 +483,10 @@ RuleBase *RuleEngine::createRule(const QString &rule_type)
     else if (rule_type == "numbering" || rule_type == "Numbering")
     {
         return new NumberingRule();
+    }
+    else if (rule_type == "dateTime" || rule_type == "DateTime")
+    {
+        return new DateTimeRule();
     }
 
     return nullptr;

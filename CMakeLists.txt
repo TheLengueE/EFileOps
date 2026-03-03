@@ -70,6 +70,7 @@ set(RULE_IMPL_HEADERS
     src/rule/rules/NumberingRule.h
     src/rule/rules/CaseTransformRule.h
     src/rule/rules/RemoveRule.h
+    src/rule/rules/DateTimeRule.h
 )
 
 # Concrete rule sources
@@ -80,6 +81,7 @@ set(RULE_IMPL_SOURCES
     src/rule/rules/NumberingRule.cpp
     src/rule/rules/CaseTransformRule.cpp
     src/rule/rules/RemoveRule.cpp
+    src/rule/rules/DateTimeRule.cpp
 )
 
 # Controller headers
@@ -225,6 +227,7 @@ qt_add_qml_module(${PROJECT_NAME}
         qml/rules/FormatRuleConfig.qml
         qml/rules/AddRuleConfig.qml
         qml/rules/NumberingRuleConfig.qml
+        qml/rules/DateTimeRuleConfig.qml
     RESOURCES
         qml/qmldir
         qml/LeftPanel/qmldir

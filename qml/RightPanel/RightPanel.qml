@@ -46,9 +46,9 @@ Rectangle {
                 }
             }
             
-            onRuleDoubleClicked: (index) => {
-                // TODO: Open edit dialog
-                console.log("Edit rule:", index)
+            onRuleClicked: (index, config) => {
+                editingRuleIndex = index
+                openEditDialog(config)
             }
             
             onRuleMoveUp: (index) => {
@@ -97,6 +97,9 @@ Rectangle {
         id: rulesModel
     }
 
+    // Track which rule is being edited (-1 = adding new rule)
+    property int editingRuleIndex: -1
+
     // ========== Rule Type Selector ==========
     RuleTypeSelector {
         id: ruleTypeSelector
@@ -119,6 +122,9 @@ Rectangle {
                 case "numbering":
                     numberingRuleConfig.open()
                     break
+                case "dateTime":
+                    dateTimeRuleConfig.open()
+                    break
             }
         }
     }
@@ -127,23 +133,10 @@ Rectangle {
     ReplaceRuleConfig {
         id: replaceRuleConfig
         
-        onRuleConfigured: function(config) {
-            // Call MainController to add rule
-            var response = mainController.addRule("replace", config)
-            
-            if (response.success) {
-                // Add to UI list
-                rulesModel.append({
-                    name: config.name,
-                    description: generateDescription(config),
-                    config: config
-                })
-            } else {
-                console.error("Failed to add rule:", response.message)
-            }
-        }
+        onRuleConfigured: function(config) { applyRuleConfig(config) }
         
         onBackToSelector: {
+            editingRuleIndex = -1
             replaceRuleConfig.close()
             ruleTypeSelector.open()
         }
@@ -151,23 +144,10 @@ Rectangle {
     
     RemoveRuleConfig {
         id: removeRuleConfig
-        onRuleConfigured: function(config) {
-            // Call MainController to add rule
-            var response = mainController.addRule(config.ruleType, config)
-            
-            if (response.success) {
-                // Add to UI list
-                rulesModel.append({
-                    name: config.name,
-                    description: generateDescription(config),
-                    config: config
-                })
-            } else {
-                console.error("Failed to add rule:", response.message)
-            }
-        }
+        onRuleConfigured: function(config) { applyRuleConfig(config) }
         
         onBackToSelector: {
+            editingRuleIndex = -1
             removeRuleConfig.close()
             ruleTypeSelector.open()
         }
@@ -175,23 +155,10 @@ Rectangle {
     
     FormatRuleConfig {
         id: formatRuleConfig
-        onRuleConfigured: function(config) {
-            // Call MainController to add rule
-            var response = mainController.addRule(config.ruleType, config)
-            
-            if (response.success) {
-                // Add to UI list
-                rulesModel.append({
-                    name: config.name,
-                    description: generateDescription(config),
-                    config: config
-                })
-            } else {
-                console.error("Failed to add rule:", response.message)
-            }
-        }
+        onRuleConfigured: function(config) { applyRuleConfig(config) }
         
         onBackToSelector: {
+            editingRuleIndex = -1
             formatRuleConfig.close()
             ruleTypeSelector.open()
         }
@@ -199,23 +166,10 @@ Rectangle {
     
     AddRuleConfig {
         id: addRuleConfig
-        onRuleConfigured: function(config) {
-            // Call MainController to add rule
-            var response = mainController.addRule(config.ruleType, config)
-            
-            if (response.success) {
-                // Add to UI list
-                rulesModel.append({
-                    name: config.name,
-                    description: generateDescription(config),
-                    config: config
-                })
-            } else {
-                console.error("Failed to add rule:", response.message)
-            }
-        }
+        onRuleConfigured: function(config) { applyRuleConfig(config) }
         
         onBackToSelector: {
+            editingRuleIndex = -1
             addRuleConfig.close()
             ruleTypeSelector.open()
         }
@@ -223,28 +177,104 @@ Rectangle {
     
     NumberingRuleConfig {
         id: numberingRuleConfig
-        onRuleConfigured: function(config) {
-            // Call MainController to add rule
-            var response = mainController.addRule(config.ruleType, config)
-            
+        onRuleConfigured: function(config) { applyRuleConfig(config) }
+        
+        onBackToSelector: {
+            editingRuleIndex = -1
+            numberingRuleConfig.close()
+            ruleTypeSelector.open()
+        }
+    }
+
+    DateTimeRuleConfig {
+        id: dateTimeRuleConfig
+        onRuleConfigured: function(config) { applyRuleConfig(config) }
+
+        onBackToSelector: {
+            editingRuleIndex = -1
+            dateTimeRuleConfig.close()
+            ruleTypeSelector.open()
+        }
+    }
+    
+    // Open the corresponding edit dialog pre-filled with existing config
+    function openEditDialog(config) {
+        switch (config.ruleType) {
+            case "replace":
+                replaceRuleConfig.findText      = config.findText || ""
+                replaceRuleConfig.replaceText   = config.replaceText || ""
+                replaceRuleConfig.caseSensitive = config.caseSensitive || false
+                replaceRuleConfig.open()
+                break
+            case "remove":
+                removeRuleConfig.keyword        = config.keyword || ""
+                removeRuleConfig.caseSensitive  = config.caseSensitive || false
+                removeRuleConfig.open()
+                break
+            case "format":
+                formatRuleConfig.selectedFormat = config.caseType || 0
+                formatRuleConfig.open()
+                break
+            case "add":
+            case "addPrefix":
+            case "addSuffix":
+                addRuleConfig.textToAdd = config.text || ""
+                addRuleConfig.isPrefix  = (config.ruleType === "addPrefix" || config.isPrefix === true)
+                addRuleConfig.open()
+                break
+            case "numbering":
+                numberingRuleConfig.position      = config.position || 0
+                numberingRuleConfig.startNumber   = config.startNumber || 1
+                numberingRuleConfig.paddingLength = config.paddingLength || 3
+                numberingRuleConfig.separator     = config.separator || "_"
+                numberingRuleConfig.open()
+                break
+            case "DateTime":
+                dateTimeRuleConfig.position      = config.isPrefix ? 0 : 1
+                dateTimeRuleConfig.formatPreset  = ["YYYY-MM-DD","YYYYMMDD","MM-DD-YYYY","DD.MM.YYYY","YYYY-MM-DD_HH-mm"].indexOf(config.format)
+                if (dateTimeRuleConfig.formatPreset < 0) {
+                    dateTimeRuleConfig.formatPreset = 5
+                    dateTimeRuleConfig.customFormat = config.format || ""
+                }
+                dateTimeRuleConfig.timeSource    = config.useModifiedTime ? 0 : 1
+                dateTimeRuleConfig.separator     = config.separator || "_"
+                dateTimeRuleConfig.skipReset     = true
+                dateTimeRuleConfig.open()
+                break
+        }
+    }
+
+    // Apply a rule config: update existing rule if editing, otherwise add new
+    function applyRuleConfig(config) {
+        var idx = editingRuleIndex
+        editingRuleIndex = -1
+        if (idx >= 0) {
+            // Edit mode: update rule in engine and model
+            var response = mainController.updateRule(idx, config)
             if (response.success) {
-                // Add to UI list
+                rulesModel.set(idx, {
+                    name: config.name,
+                    description: generateDescription(config),
+                    config: config
+                })
+            } else {
+                console.error("Failed to update rule:", response.message)
+            }
+        } else {
+            // Add mode
+            var resp = mainController.addRule(config.ruleType, config)
+            if (resp.success) {
                 rulesModel.append({
                     name: config.name,
                     description: generateDescription(config),
                     config: config
                 })
             } else {
-                console.error("Failed to add rule:", response.message)
+                console.error("Failed to add rule:", resp.message)
             }
         }
-        
-        onBackToSelector: {
-            numberingRuleConfig.close()
-            ruleTypeSelector.open()
-        }
     }
-    
+
     // Generate rule description
     function generateDescription(config) {
         switch(config.ruleType) {
@@ -279,6 +309,13 @@ Rectangle {
                     .replace("%1", posText)
                     .replace("%2", config.startNumber)
                     .replace("%3", paddingText)
+            case "DateTime":
+                var dtPos = config.isPrefix ? I18n.tr("RightPanel", "Prefix") : I18n.tr("RightPanel", "Suffix")
+                var dtSrc = config.useModifiedTime ? I18n.tr("RightPanel", "Modified") : I18n.tr("RightPanel", "Created")
+                return I18n.tr("RightPanel", "Date/Time %1 (%2): \"%3\"")
+                    .replace("%1", dtPos)
+                    .replace("%2", dtSrc)
+                    .replace("%3", config.format)
             default:
                 return config.description || ""
         }
