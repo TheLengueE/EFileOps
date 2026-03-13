@@ -99,8 +99,8 @@ Popup {
             // Remove rule
             RuleTypeCard {
                 width: parent.width
-                title: I18n.tr("RuleTypeSelector", "Remove")
-                description: I18n.tr("RuleTypeSelector", "Remove files from list by keyword matching")
+                title: I18n.tr("RuleTypeSelector", "Delete Characters")
+                description: I18n.tr("RuleTypeSelector", "Delete specific characters in file names")
                 onClicked: {
                     root.ruleTypeSelected("remove")
                     root.close()

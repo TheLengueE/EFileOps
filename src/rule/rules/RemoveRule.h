@@ -3,16 +3,22 @@
 #include "../RuleBase.h"
 
 /**
- * @brief Remove file rule
+ * @brief Remove character rule
  *
- * Remove files from file list based on keyword matching
- * Note: This does not remove characters from filename, but removes matching files from list
+ * Delete characters from filename with multiple strategies:
+ * - remove first N characters
+ * - remove last N characters
+ * - remove characters from A to B (1-based, inclusive)
+ * - remove all digits
  */
 class RemoveRule : public RuleBase
 {
     Q_OBJECT
-    Q_PROPERTY(QString keyword READ keyword WRITE setKeyword NOTIFY keywordChanged)
-    Q_PROPERTY(bool caseSensitive READ caseSensitive WRITE setCaseSensitive NOTIFY caseSensitiveChanged)
+    Q_PROPERTY(int removeFirstCount READ removeFirstCount WRITE setRemoveFirstCount NOTIFY removeFirstCountChanged)
+    Q_PROPERTY(int removeLastCount READ removeLastCount WRITE setRemoveLastCount NOTIFY removeLastCountChanged)
+    Q_PROPERTY(int rangeStart READ rangeStart WRITE setRangeStart NOTIFY rangeStartChanged)
+    Q_PROPERTY(int rangeEnd READ rangeEnd WRITE setRangeEnd NOTIFY rangeEndChanged)
+    Q_PROPERTY(bool removeDigits READ removeDigits WRITE setRemoveDigits NOTIFY removeDigitsChanged)
 
   public:
     explicit RemoveRule(QObject *parent = nullptr);
@@ -22,25 +28,37 @@ class RemoveRule : public RuleBase
     QString description() const override;
     bool    validate(QString *errorMessage = nullptr) const override;
 
-    // Check if file should be removed (from list)
-    bool shouldRemoveFile(const FileItem *fileItem) const;
-
     QJsonObject toJson() const override;
     void        fromJson(const QJsonObject &json) override;
     void        applyConfig(const QVariantMap &config) override;
     RuleBase   *clone() const override;
 
-    QString keyword() const { return keyword_; }
-    void    setKeyword(const QString &keyword);
+    int  removeFirstCount() const { return remove_first_count_; }
+    void setRemoveFirstCount(int count);
 
-    bool caseSensitive() const { return case_sensitive_; }
-    void setCaseSensitive(bool sensitive);
+    int  removeLastCount() const { return remove_last_count_; }
+    void setRemoveLastCount(int count);
+
+    int  rangeStart() const { return range_start_; }
+    void setRangeStart(int start);
+
+    int  rangeEnd() const { return range_end_; }
+    void setRangeEnd(int end);
+
+    bool removeDigits() const { return remove_digits_; }
+    void setRemoveDigits(bool remove);
 
   signals:
-    void keywordChanged();
-    void caseSensitiveChanged();
+    void removeFirstCountChanged();
+    void removeLastCountChanged();
+    void rangeStartChanged();
+    void rangeEndChanged();
+    void removeDigitsChanged();
 
   private:
-    QString keyword_;        // Match keyword
-    bool    case_sensitive_; // Whether case sensitive
+    int  remove_first_count_;
+    int  remove_last_count_;
+    int  range_start_;
+    int  range_end_;
+    bool remove_digits_;
 };

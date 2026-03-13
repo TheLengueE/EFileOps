@@ -133,22 +133,6 @@ RuleBase *RuleEngine::getRule(int index) const
 
 QString RuleEngine::applyRules(const QString &input, const FileItem *fileItem, int fileIndex) const
 {
-    // First check if any remove rule matches
-    for (const RuleBase *rule : rules_)
-    {
-        if (rule && rule->enabled())
-        {
-            // Check if it's a remove rule
-            const RemoveRule *removeRule = qobject_cast<const RemoveRule *>(rule);
-            if (removeRule && removeRule->shouldRemoveFile(fileItem))
-            {
-                // File should be removed, return special marker
-                return "__REMOVE_FILE__";
-            }
-        }
-    }
-
-    // If file doesn't need removal, continue applying other rules
     // Check if ignoring extension
     bool ignore_ext = AppSettings::instance()->ignoreExtension();
 
@@ -158,17 +142,12 @@ QString RuleEngine::applyRules(const QString &input, const FileItem *fileItem, i
         QString base_name = fileItem->fileName();  // Without extension
         QString extension = fileItem->extension(); // With extension (e.g., .txt)
 
-        // Apply rules only to filename (exclude remove rules)
+        // Apply rules only to filename
         QString result = base_name;
         for (const RuleBase *rule : rules_)
         {
             if (rule && rule->enabled())
             {
-                // Skip remove rules
-                const RemoveRule *remove_rule = qobject_cast<const RemoveRule *>(rule);
-                if (remove_rule)
-                    continue;
-
                 result = rule->apply(result, fileItem, fileIndex);
             }
         }
@@ -178,17 +157,12 @@ QString RuleEngine::applyRules(const QString &input, const FileItem *fileItem, i
     }
     else
     {
-        // Apply rules to full filename (exclude remove rules)
+        // Apply rules to full filename
         QString result = input;
         for (const RuleBase *rule : rules_)
         {
             if (rule && rule->enabled())
             {
-                // Skip remove rules
-                const RemoveRule *remove_rule = qobject_cast<const RemoveRule *>(rule);
-                if (remove_rule)
-                    continue;
-
                 result = rule->apply(result, fileItem, fileIndex);
             }
         }
@@ -224,18 +198,8 @@ BaseResponse RuleEngine::previewAll(FileService *fileService, const QList<int> &
         if (!selected_set.isEmpty() && selected_set.contains(i) && !rules_.isEmpty())
         {
             // Selected file: apply rules
-            // applyRules receives full filename, file object and file index, returns full new filename or delete marker
             QString result = applyRules(original_name, file, i);
-
-            // Check if marked for deletion
-            if (result == "__REMOVE_FILE__")
-            {
-                new_names.append("[To be removed]");
-            }
-            else
-            {
-                new_names.append(result);
-            }
+            new_names.append(result);
         }
         else
         {

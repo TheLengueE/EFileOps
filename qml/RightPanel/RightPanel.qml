@@ -111,6 +111,11 @@ Rectangle {
                     replaceRuleConfig.open()
                     break
                 case "remove":
+                    removeRuleConfig.removeFirstCount = 0
+                    removeRuleConfig.removeLastCount = 0
+                    removeRuleConfig.rangeStart = 0
+                    removeRuleConfig.rangeEnd = 0
+                    removeRuleConfig.removeDigits = false
                     removeRuleConfig.open()
                     break
                 case "format":
@@ -207,8 +212,11 @@ Rectangle {
                 replaceRuleConfig.open()
                 break
             case "remove":
-                removeRuleConfig.keyword        = config.keyword || ""
-                removeRuleConfig.caseSensitive  = config.caseSensitive || false
+                removeRuleConfig.removeFirstCount = config.removeFirstCount || 0
+                removeRuleConfig.removeLastCount = config.removeLastCount || 0
+                removeRuleConfig.rangeStart = config.rangeStart || 0
+                removeRuleConfig.rangeEnd = config.rangeEnd || 0
+                removeRuleConfig.removeDigits = config.removeDigits || false
                 removeRuleConfig.open()
                 break
             case "format":
@@ -285,9 +293,25 @@ Rectangle {
                 if (config.caseSensitive) desc += " " + I18n.tr("RightPanel", "[Case Sensitive]")
                 return desc
             case "remove":
-                var removeDesc = I18n.tr("RightPanel", "Remove containing keyword: \"%1\"").replace("%1", config.keyword)
-                if (config.caseSensitive) removeDesc += " " + I18n.tr("RightPanel", "[Case Sensitive]")
-                return removeDesc
+                var removeParts = []
+                if ((config.removeFirstCount || 0) > 0) {
+                    removeParts.push(I18n.tr("RightPanel", "first %1").replace("%1", config.removeFirstCount))
+                }
+                if ((config.removeLastCount || 0) > 0) {
+                    removeParts.push(I18n.tr("RightPanel", "last %1").replace("%1", config.removeLastCount))
+                }
+                if ((config.rangeStart || 0) > 0 && (config.rangeEnd || 0) > 0) {
+                    removeParts.push(I18n.tr("RightPanel", "range %1-%2")
+                        .replace("%1", config.rangeStart)
+                        .replace("%2", config.rangeEnd))
+                }
+                if (config.removeDigits) {
+                    removeParts.push(I18n.tr("RightPanel", "digits"))
+                }
+                if (removeParts.length === 0) {
+                    return I18n.tr("RightPanel", "Delete characters")
+                }
+                return I18n.tr("RightPanel", "Delete: %1").replace("%1", removeParts.join(", "))
             case "addPrefix":
                 return I18n.tr("RightPanel", "Add prefix: \"%1\"").replace("%1", config.text)
             case "addSuffix":
@@ -341,8 +365,11 @@ Rectangle {
                     config.replaceText = rule.replaceText || ""
                     config.caseSensitive = rule.caseSensitive || false
                 } else if (rule.ruleType === "remove") {
-                    config.keyword = rule.keyword || ""
-                    config.caseSensitive = rule.caseSensitive || false
+                    config.removeFirstCount = rule.removeFirstCount || 0
+                    config.removeLastCount = rule.removeLastCount || 0
+                    config.rangeStart = rule.rangeStart || 0
+                    config.rangeEnd = rule.rangeEnd || 0
+                    config.removeDigits = rule.removeDigits || false
                 } else if (rule.ruleType === "addPrefix") {
                     config.text = rule.prefix || ""
                 } else if (rule.ruleType === "addSuffix") {

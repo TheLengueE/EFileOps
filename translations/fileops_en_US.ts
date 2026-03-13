@@ -435,28 +435,44 @@
         <name>RemoveRule</name>
         <message>
             <location filename="../src/rule/rules/RemoveRule.cpp" line="8"/>
-            <source>Remove Files</source>
-            <translation>Remove Files</translation>
+            <source>Delete Characters</source>
+            <translation>Delete Characters</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="60"/>
-            <source>Remove Files (Keyword Not Set)</source>
-            <translation>Remove Files (Keyword Not Set)</translation>
+            <source>first %1 char(s)</source>
+            <translation>first %1 char(s)</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="63"/>
-            <source>Remove files containing &quot;%1&quot;</source>
-            <translation>Remove files containing &quot;%1&quot;</translation>
+            <source>last %1 char(s)</source>
+            <translation>last %1 char(s)</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="66"/>
-            <source> (Case Sensitive)</source>
-            <translation> (Case Sensitive)</translation>
+            <source>position %1-%2</source>
+            <translation>position %1-%2</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="77"/>
-            <source>Keyword cannot be empty</source>
-            <translation>Keyword cannot be empty</translation>
+            <source>all digits</source>
+            <translation>all digits</translation>
+        </message>
+        <message>
+            <source>Delete Characters (No operation set)</source>
+            <translation>Delete Characters (No operation set)</translation>
+        </message>
+        <message>
+            <source>Delete characters: %1</source>
+            <translation>Delete characters: %1</translation>
+        </message>
+        <message>
+            <source>At least one delete operation must be configured</source>
+            <translation>At least one delete operation must be configured</translation>
+        </message>
+        <message>
+            <source>Delete counts and range positions must be &gt;= 0</source>
+            <translation>Delete counts and range positions must be &gt;= 0</translation>
+        </message>
+        <message>
+            <source>Range must be valid: start and end must be &gt; 0 and start &lt;= end</source>
+            <translation>Range must be valid: start and end must be &gt; 0 and start &lt;= end</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1125,48 +1141,72 @@ Do you want to continue?</translation>
             <translation>Add Rule</translation>
         </message>
         <message>
-            <source>Case Sensitive</source>
-            <translation>Case Sensitive</translation>
+            <source>Delete Characters Rule</source>
+            <translation>Delete Characters Rule</translation>
         </message>
         <message>
-            <source>Enter keyword to match files</source>
-            <translation>Enter keyword to match files</translation>
+            <source>Delete characters from file names by first N, last N, A-B range (1-based), and/or all digits.</source>
+            <translation>Delete characters from file names by first N, last N, A-B range (1-based), and/or all digits.</translation>
         </message>
         <message>
-            <source>Example: 'test' will match 'test.txt', 'my_test_file.jpg'</source>
-            <translation>Example: 'test' will match 'test.txt', 'my_test_file.jpg'</translation>
+            <source>Delete First N</source>
+            <translation>Delete First N</translation>
         </message>
         <message>
-            <source>Keyword</source>
-            <translation>Keyword</translation>
+            <source>Delete Last N</source>
+            <translation>Delete Last N</translation>
         </message>
         <message>
-            <source>Remove: %1</source>
-            <translation>Remove: %1</translation>
+            <source>Delete Range A-B (1-based, inclusive)</source>
+            <translation>Delete Range A-B (1-based, inclusive)</translation>
         </message>
         <message>
-            <source>Remove Files Rule</source>
-            <translation>Remove Files Rule</translation>
+            <source>A (start)</source>
+            <translation>A (start)</translation>
         </message>
         <message>
-            <source>This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</source>
-            <translation>This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</translation>
+            <source>B (end)</source>
+            <translation>B (end)</translation>
         </message>
         <message>
-            <source>When enabled, 'Test' and 'test' will be treated as different</source>
-            <translation>When enabled, 'Test' and 'test' will be treated as different</translation>
+            <source>Range is invalid. Please use A &lt;= B and both &gt; 0, or leave both as 0.</source>
+            <translation>Range is invalid. Please use A &lt;= B and both &gt; 0, or leave both as 0.</translation>
         </message>
         <message>
-            <source>← Back</source>
-            <translation>← Back</translation>
+            <source>Delete all digit characters (0-9)</source>
+            <translation>Delete all digit characters (0-9)</translation>
         </message>
         <message>
-            <source>⚠️ This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</source>
-            <translation>⚠️ This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</translation>
+            <source>Preview</source>
+            <translation>Preview</translation>
         </message>
         <message>
-            <source>🗑️ Remove Files Rule</source>
-            <translation>🗑️ Remove Files Rule</translation>
+            <source>Before:</source>
+            <translation>Before:</translation>
+        </message>
+        <message>
+            <source>After:</source>
+            <translation>After:</translation>
+        </message>
+        <message>
+            <source>Delete: %1</source>
+            <translation>Delete: %1</translation>
+        </message>
+        <message>
+            <source>first %1</source>
+            <translation>first %1</translation>
+        </message>
+        <message>
+            <source>last %1</source>
+            <translation>last %1</translation>
+        </message>
+        <message>
+            <source>%1-%2</source>
+            <translation>%1-%2</translation>
+        </message>
+        <message>
+            <source>digits</source>
+            <translation>digits</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1310,12 +1350,28 @@ Rules execute from top to bottom</translation>
             <translation>Prefix</translation>
         </message>
         <message>
-            <source>Remove</source>
-            <translation>Remove</translation>
+            <source>Delete characters</source>
+            <translation>Delete characters</translation>
         </message>
         <message>
-            <source>Remove containing keyword: "%1"</source>
-            <translation>Remove containing keyword: "%1"</translation>
+            <source>Delete: %1</source>
+            <translation>Delete: %1</translation>
+        </message>
+        <message>
+            <source>first %1</source>
+            <translation>first %1</translation>
+        </message>
+        <message>
+            <source>last %1</source>
+            <translation>last %1</translation>
+        </message>
+        <message>
+            <source>range %1-%2</source>
+            <translation>range %1-%2</translation>
+        </message>
+        <message>
+            <source>digits</source>
+            <translation>digits</translation>
         </message>
         <message>
             <source>Save Configuration</source>
@@ -1455,12 +1511,12 @@ Rules execute from top to bottom</translation>
         </message>
 
         <message>
-            <source>Remove</source>
-            <translation>Remove</translation>
+            <source>Delete Characters</source>
+            <translation>Delete Characters</translation>
         </message>
         <message>
-            <source>Remove files from list by keyword matching</source>
-            <translation>Remove files from list by keyword matching</translation>
+            <source>Delete specific characters in file names</source>
+            <translation>Delete specific characters in file names</translation>
         </message>
         <message>
             <source>Replace</source>
@@ -1515,8 +1571,12 @@ Rules execute from top to bottom</translation>
             <translation>Close</translation>
         </message>
         <message>
-            <source>Disabled - Will modify file extensions (recommended)</source>
-            <translation>Disabled - Will modify file extensions (recommended)</translation>
+            <source>Disabled - Will modify file extensions</source>
+            <translation>Disabled - Will modify file extensions</translation>
+        </message>
+        <message>
+            <source>Removes every numeric character while leaving letters and symbols unchanged</source>
+            <translation>Removes every numeric character while leaving letters and symbols unchanged</translation>
         </message>
         <message>
             <source>Enabled - Will ignore file extensions</source>

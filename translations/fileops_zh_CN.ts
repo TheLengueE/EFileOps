@@ -435,28 +435,44 @@
         <name>RemoveRule</name>
         <message>
             <location filename="../src/rule/rules/RemoveRule.cpp" line="8"/>
-            <source>Remove Files</source>
-            <translation>删除文件</translation>
+            <source>Delete Characters</source>
+            <translation>删除字符</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="60"/>
-            <source>Remove Files (Keyword Not Set)</source>
-            <translation>删除文件: (未设置关键词)</translation>
+            <source>first %1 char(s)</source>
+            <translation>前 %1 个字符</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="63"/>
-            <source>Remove files containing &quot;%1&quot;</source>
-            <translation>删除包含 &quot;%1&quot; 的文件</translation>
+            <source>last %1 char(s)</source>
+            <translation>后 %1 个字符</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="66"/>
-            <source> (Case Sensitive)</source>
-            <translation> (区分大小写)</translation>
+            <source>position %1-%2</source>
+            <translation>第 %1-%2 位</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="77"/>
-            <source>Keyword cannot be empty</source>
-            <translation>关键词不能为空</translation>
+            <source>all digits</source>
+            <translation>所有数字</translation>
+        </message>
+        <message>
+            <source>Delete Characters (No operation set)</source>
+            <translation>删除字符（未设置操作）</translation>
+        </message>
+        <message>
+            <source>Delete characters: %1</source>
+            <translation>删除字符：%1</translation>
+        </message>
+        <message>
+            <source>At least one delete operation must be configured</source>
+            <translation>至少需要配置一种删除操作</translation>
+        </message>
+        <message>
+            <source>Delete counts and range positions must be &gt;= 0</source>
+            <translation>删除数量和范围位置必须 &gt;= 0</translation>
+        </message>
+        <message>
+            <source>Range must be valid: start and end must be &gt; 0 and start &lt;= end</source>
+            <translation>范围无效：起始和结束必须 &gt; 0 且起始 &lt;= 结束</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1124,48 +1140,72 @@
             <translation>添加规则</translation>
         </message>
         <message>
-            <source>Case Sensitive</source>
-            <translation>区分大小写</translation>
+            <source>Delete Characters Rule</source>
+            <translation>删除字符规则</translation>
         </message>
         <message>
-            <source>Enter keyword to match files</source>
-            <translation>输入关键字以匹配文件</translation>
+            <source>Delete characters from file names by first N, last N, A-B range (1-based), and/or all digits.</source>
+            <translation>通过删除前 N 个、后 N 个、第 A-B 位（从 1 开始）和/或所有数字字符来修改文件名。</translation>
         </message>
         <message>
-            <source>Example: 'test' will match 'test.txt', 'my_test_file.jpg'</source>
-            <translation>例如：'test' 将匹配 'test.txt'、'my_test_file.jpg'</translation>
+            <source>Delete First N</source>
+            <translation>删除前 N 个字符</translation>
         </message>
         <message>
-            <source>Keyword</source>
-            <translation>关键字</translation>
+            <source>Delete Last N</source>
+            <translation>删除后 N 个字符</translation>
         </message>
         <message>
-            <source>Remove: %1</source>
-            <translation>移除：%1</translation>
+            <source>Delete Range A-B (1-based, inclusive)</source>
+            <translation>删除 A-B 范围字符（从 1 开始，含两端）</translation>
         </message>
         <message>
-            <source>Remove Files Rule</source>
-            <translation>移除文件规则</translation>
+            <source>A (start)</source>
+            <translation>A（起始）</translation>
         </message>
         <message>
-            <source>This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</source>
-            <translation>此规则将从列表中移除包含指定关键字的文件（不会从磁盘删除）。</translation>
+            <source>B (end)</source>
+            <translation>B（结束）</translation>
         </message>
         <message>
-            <source>When enabled, 'Test' and 'test' will be treated as different</source>
-            <translation>启用时，'Test' 和 'test' 将被视为不同</translation>
+            <source>Range is invalid. Please use A &lt;= B and both &gt; 0, or leave both as 0.</source>
+            <translation>范围无效。请使用 A &lt;= B 且两者都 &gt; 0，或将两者都留为 0。</translation>
         </message>
         <message>
-            <source>← Back</source>
-            <translation>← 返回</translation>
+            <source>Delete all digit characters (0-9)</source>
+            <translation>删除所有数字字符（0-9）</translation>
         </message>
         <message>
-            <source>⚠️ This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</source>
-            <translation>⚠️ 此规则将从列表中移除包含指定关键字的文件（不会从磁盘删除）。</translation>
+            <source>Preview</source>
+            <translation>预览</translation>
         </message>
         <message>
-            <source>🗑️ Remove Files Rule</source>
-            <translation>🗑️ 移除文件规则</translation>
+            <source>Before:</source>
+            <translation>修改前：</translation>
+        </message>
+        <message>
+            <source>After:</source>
+            <translation>修改后：</translation>
+        </message>
+        <message>
+            <source>Delete: %1</source>
+            <translation>删除：%1</translation>
+        </message>
+        <message>
+            <source>first %1</source>
+            <translation>前 %1 个</translation>
+        </message>
+        <message>
+            <source>last %1</source>
+            <translation>后 %1 个</translation>
+        </message>
+        <message>
+            <source>%1-%2</source>
+            <translation>%1-%2</translation>
+        </message>
+        <message>
+            <source>digits</source>
+            <translation>数字</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1309,12 +1349,28 @@
             <translation>前缀</translation>
         </message>
         <message>
-            <source>Remove</source>
-            <translation>移除</translation>
+            <source>Delete characters</source>
+            <translation>删除字符</translation>
         </message>
         <message>
-            <source>Remove containing keyword: "%1"</source>
-            <translation>移除包含关键字："%1"</translation>
+            <source>Delete: %1</source>
+            <translation>删除：%1</translation>
+        </message>
+        <message>
+            <source>first %1</source>
+            <translation>前 %1 个</translation>
+        </message>
+        <message>
+            <source>last %1</source>
+            <translation>后 %1 个</translation>
+        </message>
+        <message>
+            <source>range %1-%2</source>
+            <translation>范围 %1-%2</translation>
+        </message>
+        <message>
+            <source>digits</source>
+            <translation>数字</translation>
         </message>
         <message>
             <source>Save Configuration</source>
@@ -1454,12 +1510,12 @@
         </message>
 
         <message>
-            <source>Remove</source>
-            <translation>移除</translation>
+            <source>Delete Characters</source>
+            <translation>删除字符</translation>
         </message>
         <message>
-            <source>Remove files from list by keyword matching</source>
-            <translation>通过关键字匹配从列表中移除文件</translation>
+            <source>Delete specific characters in file names</source>
+            <translation>删除文件名中的指定字符</translation>
         </message>
         <message>
             <source>Replace</source>
@@ -1514,8 +1570,12 @@
             <translation>关闭</translation>
         </message>
         <message>
-            <source>Disabled - Will modify file extensions (recommended)</source>
-            <translation>已禁用 - 将修改文件扩展名（推荐）</translation>
+            <source>Disabled - Will modify file extensions</source>
+            <translation>已禁用 - 将修改文件扩展名</translation>
+        </message>
+        <message>
+            <source>Removes every numeric character while leaving letters and symbols unchanged</source>
+            <translation>删除所有数字字符，同时保留字母和符号不变</translation>
         </message>
         <message>
             <source>Enabled - Will ignore file extensions</source>

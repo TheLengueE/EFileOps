@@ -323,7 +323,7 @@ Popup {
                             Text {
                                 text: ignoreExtensionSwitch.checked 
                                     ? I18n.tr("SettingsDialog", "Enabled - Will ignore file extensions")
-                                    : I18n.tr("SettingsDialog", "Disabled - Will modify file extensions (recommended)")
+                                    : I18n.tr("SettingsDialog", "Disabled - Will modify file extensions")
                                 font.pixelSize: EUITheme.fontCaption
                                 color: EUITheme.colorTextSubtle
                                 wrapMode: Text.WordWrap

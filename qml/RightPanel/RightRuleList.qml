@@ -236,7 +236,7 @@ Rectangle {
             case "replace":
                 return I18n.tr("RuleTypeSelector", "Replace")
             case "remove":
-                return I18n.tr("RuleTypeSelector", "Remove")
+                return I18n.tr("RuleTypeSelector", "Delete Characters")
             case "format":
                 return I18n.tr("RuleTypeSelector", "Format")
             case "add":

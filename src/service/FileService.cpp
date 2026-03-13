@@ -539,22 +539,13 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
     // Save snapshot before execution (for undo)
     saveSnapshot();
 
-    // Separate files to be removed and files to be renamed
-    QList<int>                 files_to_remove;       // Indices to be removed (from list)
+    // Prepare files to be renamed
     QList<QPair<int, QString>> rename_list;           // <Index, New path>
-    QList<QString>             original_paths;        // For rollback
     int                        pre_failure_count = 0; // Count failures before execution
 
     for (int index : selectedIndices)
     {
         FileItem *file = files_[index];
-
-        // Check if marked for deletion
-        if (file->newName() == "[To be removed]")
-        {
-            files_to_remove.append(index);
-            continue;
-        }
 
         // Skip files without modifications
         if (file->newName().isEmpty() || !file->isModified())
@@ -586,29 +577,9 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
 
 
         rename_list.append(qMakePair(index, new_path));
-        original_paths.append(file->originalPath());
     }
 
-    // Execute removal operations (remove from list)
-    int remove_count = 0;
-    if (!files_to_remove.isEmpty())
-    {
-        // Sort indices in descending order to avoid index changes during removal
-        std::sort(files_to_remove.begin(), files_to_remove.end(), std::greater<int>());
-
-        for (int index : files_to_remove)
-        {
-            FileItem *file = files_[index];
-            files_.removeAt(index);
-            delete file;
-            remove_count++;
-        }
-
-        emit fileCountChanged();
-    }
-
-    // If both lists are empty
-    if (rename_list.isEmpty() && remove_count == 0)
+    if (rename_list.isEmpty())
     {
         // If there were pre-execution failures, need to sort and emit signal
         if (pre_failure_count > 0)
@@ -678,15 +649,7 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
         int     index    = rename_list[i].first;
         QString new_path = rename_list[i].second;
 
-        // Need to adjust index because some files may have been removed
         int adjusted_index = index;
-        for (int removed_index : files_to_remove)
-        {
-            if (removed_index < index)
-            {
-                adjusted_index--;
-            }
-        }
 
         // Check if adjusted index is valid
         if (adjusted_index < 0 || adjusted_index >= files_.size())
@@ -850,28 +813,13 @@ BaseResponse FileService::executeRename(const QList<int> &selectedIndices)
     }
 
     // Emit execution completed signal
-    emit renameExecuted(success_count + remove_count, failure_count);
+    emit renameExecuted(success_count, failure_count);
 
     // Move history index to next position, so undo will return to index 0 snapshot
     current_history_index_++;
     emit canUndoChanged();
 
-    QString result_msg;
-    if (remove_count > 0 && success_count > 0)
-    {
-        result_msg = tr("Processing complete: Removed %1, renamed successfully %2, failed %3")
-                         .arg(remove_count)
-                         .arg(success_count)
-                         .arg(failure_count);
-    }
-    else if (remove_count > 0)
-    {
-        result_msg = tr("Removal complete: Removed %1 file(s)").arg(remove_count);
-    }
-    else
-    {
-        result_msg = tr("Rename complete: Successful %1, failed %2").arg(success_count).arg(failure_count);
-    }
+    QString result_msg = tr("Rename complete: Successful %1, failed %2").arg(success_count).arg(failure_count);
 
     return BaseResponse::Success(result_msg);
 }

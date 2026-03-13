@@ -5,7 +5,7 @@
 AppSettings *AppSettings::instance_ = nullptr;
 
 AppSettings::AppSettings(QObject *parent)
-    : QObject(parent), settings_(nullptr), ignore_extension_(false), // Default: do not ignore extension
+    : QObject(parent), settings_(nullptr), ignore_extension_(true), // Default: ignore extension
       default_sort_mode_(0),                                         // Default: sort by name
       language_("en_US"),                                            // Default: English
       auto_restore_session_(true)                                    // Default: auto restore
@@ -89,7 +89,7 @@ void AppSettings::load()
 {
     if (settings_)
     {
-        ignore_extension_     = settings_->value("ignoreExtension", false).toBool();
+        ignore_extension_     = settings_->value("ignoreExtension", true).toBool();
         default_sort_mode_    = settings_->value("defaultSortMode", 0).toInt();
         language_             = settings_->value("language", "zh_CN").toString();
         auto_restore_session_ = settings_->value("autoRestoreSession", true).toBool();

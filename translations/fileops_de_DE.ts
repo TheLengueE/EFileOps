@@ -435,28 +435,44 @@
         <name>RemoveRule</name>
         <message>
             <location filename="../src/rule/rules/RemoveRule.cpp" line="8"/>
-            <source>Remove Files</source>
-            <translation>Dateien entfernen</translation>
+            <source>Delete Characters</source>
+            <translation>Zeichen loeschen</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="60"/>
-            <source>Remove Files (Keyword Not Set)</source>
-            <translation>Dateien entfernen (Stichwort nicht festgelegt)</translation>
+            <source>first %1 char(s)</source>
+            <translation>erste %1 Zeichen</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="63"/>
-            <source>Remove files containing &quot;%1&quot;</source>
-            <translation>Dateien entfernen, die &quot;%1&quot; enthalten</translation>
+            <source>last %1 char(s)</source>
+            <translation>letzte %1 Zeichen</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="66"/>
-            <source> (Case Sensitive)</source>
-            <translation> (Groß-/Kleinschreibung beachten)</translation>
+            <source>position %1-%2</source>
+            <translation>Position %1-%2</translation>
         </message>
         <message>
-            <location filename="../src/rule/rules/RemoveRule.cpp" line="77"/>
-            <source>Keyword cannot be empty</source>
-            <translation>Stichwort darf nicht leer sein</translation>
+            <source>all digits</source>
+            <translation>alle Ziffern</translation>
+        </message>
+        <message>
+            <source>Delete Characters (No operation set)</source>
+            <translation>Zeichen loeschen (keine Operation gesetzt)</translation>
+        </message>
+        <message>
+            <source>Delete characters: %1</source>
+            <translation>Zeichen loeschen: %1</translation>
+        </message>
+        <message>
+            <source>At least one delete operation must be configured</source>
+            <translation>Mindestens eine Loeschoperation muss konfiguriert sein</translation>
+        </message>
+        <message>
+            <source>Delete counts and range positions must be &gt;= 0</source>
+            <translation>Loeschanzahl und Bereichspositionen muessen &gt;= 0 sein</translation>
+        </message>
+        <message>
+            <source>Range must be valid: start and end must be &gt; 0 and start &lt;= end</source>
+            <translation>Der Bereich muss gueltig sein: Start und Ende muessen &gt; 0 sein und Start &lt;= Ende</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1125,48 +1141,72 @@ Möchten Sie fortfahren?</translation>
             <translation>Regel hinzufügen</translation>
         </message>
         <message>
-            <source>Case Sensitive</source>
-            <translation>Groß-/Kleinschreibung beachten</translation>
+            <source>Delete Characters Rule</source>
+            <translation>Zeichen-loeschen-Regel</translation>
         </message>
         <message>
-            <source>Enter keyword to match files</source>
-            <translation>Geben Sie ein Stichwort ein, um Dateien zu finden</translation>
+            <source>Delete characters from file names by first N, last N, A-B range (1-based), and/or all digits.</source>
+            <translation>Loescht Zeichen aus Dateinamen ueber erstes N, letztes N, Bereich A-B (1-basiert) und/oder alle Ziffern.</translation>
         </message>
         <message>
-            <source>Example: 'test' will match 'test.txt', 'my_test_file.jpg'</source>
-            <translation>Beispiel: 'test' findet 'test.txt', 'meine_test_datei.jpg'</translation>
+            <source>Delete First N</source>
+            <translation>Erste N Zeichen loeschen</translation>
         </message>
         <message>
-            <source>Keyword</source>
-            <translation>Stichwort</translation>
+            <source>Delete Last N</source>
+            <translation>Letzte N Zeichen loeschen</translation>
         </message>
         <message>
-            <source>Remove: %1</source>
-            <translation>Entfernen: %1</translation>
+            <source>Delete Range A-B (1-based, inclusive)</source>
+            <translation>Bereich A-B loeschen (1-basiert, inklusiv)</translation>
         </message>
         <message>
-            <source>Remove Files Rule</source>
-            <translation>Dateien entfernen-Regel</translation>
+            <source>A (start)</source>
+            <translation>A (Start)</translation>
         </message>
         <message>
-            <source>This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</source>
-            <translation>Diese Regel entfernt Dateien aus der Liste (löscht sie nicht von der Festplatte), wenn ihre Namen das angegebene Stichwort enthalten.</translation>
+            <source>B (end)</source>
+            <translation>B (Ende)</translation>
         </message>
         <message>
-            <source>When enabled, 'Test' and 'test' will be treated as different</source>
-            <translation>Wenn aktiviert, werden 'Test' und 'test' als unterschiedlich behandelt</translation>
+            <source>Range is invalid. Please use A &lt;= B and both &gt; 0, or leave both as 0.</source>
+            <translation>Der Bereich ist ungueltig. Bitte A &lt;= B und beide &gt; 0 verwenden oder beide auf 0 lassen.</translation>
         </message>
         <message>
-            <source>← Back</source>
-            <translation>← Zurück</translation>
+            <source>Delete all digit characters (0-9)</source>
+            <translation>Alle Ziffern loeschen (0-9)</translation>
         </message>
         <message>
-            <source>⚠️ This rule will remove files from the list (not delete from disk) if their names contain the specified keyword.</source>
-            <translation>⚠️ Diese Regel entfernt Dateien aus der Liste (löscht sie nicht von der Festplatte), wenn ihre Namen das angegebene Stichwort enthalten.</translation>
+            <source>Preview</source>
+            <translation>Vorschau</translation>
         </message>
         <message>
-            <source>🗑️ Remove Files Rule</source>
-            <translation>🗑️ Dateien entfernen-Regel</translation>
+            <source>Before:</source>
+            <translation>Vorher:</translation>
+        </message>
+        <message>
+            <source>After:</source>
+            <translation>Nachher:</translation>
+        </message>
+        <message>
+            <source>Delete: %1</source>
+            <translation>Loeschen: %1</translation>
+        </message>
+        <message>
+            <source>first %1</source>
+            <translation>erste %1</translation>
+        </message>
+        <message>
+            <source>last %1</source>
+            <translation>letzte %1</translation>
+        </message>
+        <message>
+            <source>%1-%2</source>
+            <translation>%1-%2</translation>
+        </message>
+        <message>
+            <source>digits</source>
+            <translation>Ziffern</translation>
         </message>
         <message>
             <source>You have selected %1 files, which exceeds the maximum limit.</source>
@@ -1310,12 +1350,28 @@ Regeln werden von oben nach unten ausgeführt</translation>
             <translation>Präfix</translation>
         </message>
         <message>
-            <source>Remove</source>
-            <translation>Entfernen</translation>
+            <source>Delete characters</source>
+            <translation>Zeichen loeschen</translation>
         </message>
         <message>
-            <source>Remove containing keyword: "%1"</source>
-            <translation>Entfernen mit Stichwort: "%1"</translation>
+            <source>Delete: %1</source>
+            <translation>Loeschen: %1</translation>
+        </message>
+        <message>
+            <source>first %1</source>
+            <translation>erste %1</translation>
+        </message>
+        <message>
+            <source>last %1</source>
+            <translation>letzte %1</translation>
+        </message>
+        <message>
+            <source>range %1-%2</source>
+            <translation>Bereich %1-%2</translation>
+        </message>
+        <message>
+            <source>digits</source>
+            <translation>Ziffern</translation>
         </message>
         <message>
             <source>Save Configuration</source>
@@ -1455,12 +1511,12 @@ Regeln werden von oben nach unten ausgeführt</translation>
         </message>
 
         <message>
-            <source>Remove</source>
-            <translation>Entfernen</translation>
+            <source>Delete Characters</source>
+            <translation>Zeichen loeschen</translation>
         </message>
         <message>
-            <source>Remove files from list by keyword matching</source>
-            <translation>Dateien aus der Liste nach Stichwortübereinstimmung entfernen</translation>
+            <source>Delete specific characters in file names</source>
+            <translation>Bestimmte Zeichen in Dateinamen loeschen</translation>
         </message>
         <message>
             <source>Replace</source>
@@ -1515,8 +1571,12 @@ Regeln werden von oben nach unten ausgeführt</translation>
             <translation>Schließen</translation>
         </message>
         <message>
-            <source>Disabled - Will modify file extensions (recommended)</source>
-            <translation>Deaktiviert - Dateierweiterungen werden geändert (empfohlen)</translation>
+            <source>Disabled - Will modify file extensions</source>
+            <translation>Deaktiviert - Dateierweiterungen werden geändert</translation>
+        </message>
+        <message>
+            <source>Removes every numeric character while leaving letters and symbols unchanged</source>
+            <translation>Entfernt alle Ziffern, waehrend Buchstaben und Symbole unveraendert bleiben</translation>
         </message>
         <message>
             <source>Enabled - Will ignore file extensions</source>

@@ -1,80 +1,107 @@
 #include "RemoveRule.h"
-#include "../../model/FileItem.h"
-#include "../../core/AppSettings.h"
 #include <QJsonObject>
+#include <QRegularExpression>
+#include <QStringList>
 
-RemoveRule::RemoveRule(QObject *parent) : RuleBase(parent), keyword_(""), case_sensitive_(false)
+RemoveRule::RemoveRule(QObject *parent)
+    : RuleBase(parent), remove_first_count_(0), remove_last_count_(0), range_start_(0), range_end_(0), remove_digits_(false)
 {
-    setRuleName(tr("Remove Files"));
+    setRuleName(tr("Delete Characters"));
 }
 
 QString RemoveRule::apply(const QString &input, const FileItem *fileItem, int fileIndex) const
 {
+    Q_UNUSED(fileItem)
     Q_UNUSED(fileIndex)
-    // If file should be removed, return empty string as marker
-    // Actual removal logic is handled in RuleEngine
-    if (shouldRemoveFile(fileItem))
-    {
-        return "__REMOVE_FILE__"; // Special marker
-    }
-    return input;
-}
 
-bool RemoveRule::shouldRemoveFile(const FileItem *fileItem) const
-{
-    if (keyword_.isEmpty() || !fileItem)
+    QString result = input;
+
+    if (remove_first_count_ > 0 && !result.isEmpty())
     {
-        return false;
+        int count = qMin(remove_first_count_, result.size());
+        result    = result.mid(count);
     }
 
-    // Decide what to check based on extension settings
-    bool    ignore_extension = AppSettings::instance()->ignoreExtension();
-    QString text_to_check;
-
-    if (ignore_extension)
+    if (remove_last_count_ > 0 && !result.isEmpty())
     {
-        // Check only filename (without extension)
-        text_to_check = fileItem->fileName();
-    }
-    else
-    {
-        // Check full filename (with extension)
-        text_to_check = fileItem->fileName() + fileItem->extension();
+        int count = qMin(remove_last_count_, result.size());
+        result.chop(count);
     }
 
-    // Perform keyword matching
-    if (case_sensitive_)
+    if (range_start_ > 0 && range_end_ >= range_start_ && !result.isEmpty())
     {
-        return text_to_check.contains(keyword_, Qt::CaseSensitive);
+        int safe_start = qMax(1, qMin(range_start_, result.size()));
+        int safe_end   = qMax(1, qMin(range_end_, result.size()));
+        if (safe_start <= safe_end)
+        {
+            result.remove(safe_start - 1, safe_end - safe_start + 1);
+        }
     }
-    else
+
+    if (remove_digits_ && !result.isEmpty())
     {
-        return text_to_check.contains(keyword_, Qt::CaseInsensitive);
+        result.remove(QRegularExpression("\\d"));
     }
+
+    return result;
 }
 
 QString RemoveRule::description() const
 {
-    if (keyword_.isEmpty())
+    QStringList parts;
+    if (remove_first_count_ > 0)
     {
-        return tr("Remove Files (Keyword Not Set)");
+        parts.append(tr("first %1 char(s)").arg(remove_first_count_));
+    }
+    if (remove_last_count_ > 0)
+    {
+        parts.append(tr("last %1 char(s)").arg(remove_last_count_));
+    }
+    if (range_start_ > 0 && range_end_ >= range_start_)
+    {
+        parts.append(tr("position %1-%2").arg(range_start_).arg(range_end_));
+    }
+    if (remove_digits_)
+    {
+        parts.append(tr("all digits"));
     }
 
-    QString desc = tr("Remove files containing \"%1\"").arg(keyword_);
-    if (case_sensitive_)
+    if (parts.isEmpty())
     {
-        desc += tr(" (Case Sensitive)");
+        return tr("Delete Characters (No operation set)");
     }
-    return desc;
+
+    return tr("Delete characters: %1").arg(parts.join(", "));
 }
 
 bool RemoveRule::validate(QString *errorMessage) const
 {
-    if (keyword_.isEmpty())
+    bool has_any_operation = remove_first_count_ > 0 || remove_last_count_ > 0 || remove_digits_ ||
+                             (range_start_ > 0 && range_end_ > 0);
+
+    if (!has_any_operation)
     {
         if (errorMessage)
         {
-            *errorMessage = tr("Keyword cannot be empty");
+            *errorMessage = tr("At least one delete operation must be configured");
+        }
+        return false;
+    }
+
+    if (remove_first_count_ < 0 || remove_last_count_ < 0 || range_start_ < 0 || range_end_ < 0)
+    {
+        if (errorMessage)
+        {
+            *errorMessage = tr("Delete counts and range positions must be >= 0");
+        }
+        return false;
+    }
+
+    if ((range_start_ > 0 || range_end_ > 0) && !(range_start_ > 0 && range_end_ > 0 && range_start_ <= range_end_))
+    {
+        if (errorMessage)
+        {
+            *errorMessage = tr("Range must be valid: start and end must be > 0 and start <= end");
         }
         return false;
     }
@@ -84,35 +111,62 @@ bool RemoveRule::validate(QString *errorMessage) const
 
 QJsonObject RemoveRule::toJson() const
 {
-    QJsonObject json      = RuleBase::toJson();
-    json["keyword"]       = keyword_;
-    json["caseSensitive"] = case_sensitive_;
+    QJsonObject json          = RuleBase::toJson();
+    json["removeFirstCount"]  = remove_first_count_;
+    json["removeLastCount"]   = remove_last_count_;
+    json["rangeStart"]        = range_start_;
+    json["rangeEnd"]          = range_end_;
+    json["removeDigits"]      = remove_digits_;
     return json;
 }
 
 void RemoveRule::fromJson(const QJsonObject &json)
 {
     RuleBase::fromJson(json);
-    if (json.contains("keyword"))
+    if (json.contains("removeFirstCount"))
     {
-        setKeyword(json["keyword"].toString());
+        setRemoveFirstCount(json["removeFirstCount"].toInt());
     }
-    if (json.contains("caseSensitive"))
+    if (json.contains("removeLastCount"))
     {
-        setCaseSensitive(json["caseSensitive"].toBool());
+        setRemoveLastCount(json["removeLastCount"].toInt());
+    }
+    if (json.contains("rangeStart"))
+    {
+        setRangeStart(json["rangeStart"].toInt());
+    }
+    if (json.contains("rangeEnd"))
+    {
+        setRangeEnd(json["rangeEnd"].toInt());
+    }
+    if (json.contains("removeDigits"))
+    {
+        setRemoveDigits(json["removeDigits"].toBool());
     }
 }
 
 void RemoveRule::applyConfig(const QVariantMap &config)
 {
     RuleBase::applyConfig(config); // Call base class first
-    if (config.contains("keyword"))
+    if (config.contains("removeFirstCount"))
     {
-        setKeyword(config["keyword"].toString());
+        setRemoveFirstCount(config["removeFirstCount"].toInt());
     }
-    if (config.contains("caseSensitive"))
+    if (config.contains("removeLastCount"))
     {
-        setCaseSensitive(config["caseSensitive"].toBool());
+        setRemoveLastCount(config["removeLastCount"].toInt());
+    }
+    if (config.contains("rangeStart"))
+    {
+        setRangeStart(config["rangeStart"].toInt());
+    }
+    if (config.contains("rangeEnd"))
+    {
+        setRangeEnd(config["rangeEnd"].toInt());
+    }
+    if (config.contains("removeDigits"))
+    {
+        setRemoveDigits(config["removeDigits"].toBool());
     }
 }
 
@@ -121,28 +175,68 @@ RuleBase *RemoveRule::clone() const
     RemoveRule *cloned = new RemoveRule();
     cloned->setRuleName(ruleName());
     cloned->setEnabled(enabled());
-    cloned->setKeyword(keyword_);
-    cloned->setCaseSensitive(case_sensitive_);
+    cloned->setRemoveFirstCount(remove_first_count_);
+    cloned->setRemoveLastCount(remove_last_count_);
+    cloned->setRangeStart(range_start_);
+    cloned->setRangeEnd(range_end_);
+    cloned->setRemoveDigits(remove_digits_);
     return cloned;
 }
 
-void RemoveRule::setKeyword(const QString &keyword)
+void RemoveRule::setRemoveFirstCount(int count)
 {
-    if (keyword_ != keyword)
+    int safe_count = qMax(0, count);
+    if (remove_first_count_ != safe_count)
     {
-        keyword_ = keyword;
-        emit keywordChanged();
+        remove_first_count_ = safe_count;
+        emit removeFirstCountChanged();
         emit configChanged();
         emit descriptionChanged();
     }
 }
 
-void RemoveRule::setCaseSensitive(bool sensitive)
+void RemoveRule::setRemoveLastCount(int count)
 {
-    if (case_sensitive_ != sensitive)
+    int safe_count = qMax(0, count);
+    if (remove_last_count_ != safe_count)
     {
-        case_sensitive_ = sensitive;
-        emit caseSensitiveChanged();
+        remove_last_count_ = safe_count;
+        emit removeLastCountChanged();
+        emit configChanged();
+        emit descriptionChanged();
+    }
+}
+
+void RemoveRule::setRangeStart(int start)
+{
+    int safe_start = qMax(0, start);
+    if (range_start_ != safe_start)
+    {
+        range_start_ = safe_start;
+        emit rangeStartChanged();
+        emit configChanged();
+        emit descriptionChanged();
+    }
+}
+
+void RemoveRule::setRangeEnd(int end)
+{
+    int safe_end = qMax(0, end);
+    if (range_end_ != safe_end)
+    {
+        range_end_ = safe_end;
+        emit rangeEndChanged();
+        emit configChanged();
+        emit descriptionChanged();
+    }
+}
+
+void RemoveRule::setRemoveDigits(bool remove)
+{
+    if (remove_digits_ != remove)
+    {
+        remove_digits_ = remove;
+        emit removeDigitsChanged();
         emit configChanged();
         emit descriptionChanged();
     }
